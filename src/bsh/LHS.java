@@ -203,19 +203,16 @@ throw new Error("namespace lhs");
 		{
 			// Set the variable in namespace according to localVar flag
 			if ( localVar )
-				nameSpace.setLocalVariable( varName, val, strictJava );
+				nameSpace.setLocalVariableOrProperty( varName, val, strictJava );
 			else
-				nameSpace.setVariable( varName, val, strictJava );
+				nameSpace.setVariableOrProperty( varName, val, strictJava );
 		} else 
 		if ( type == FIELD )
 		{
 			try {
-				Object fieldVal = val instanceof Primitive ?  
-					((Primitive)val).getValue() : val;
-
 				// This should probably be in Reflect.java
 				Reflect.setAccessible(field);
-				field.set( object, fieldVal );
+				field.set( object, Primitive.unwrap(val));
 				return val;
 			}
 			catch( NullPointerException e) {   

@@ -16,14 +16,14 @@
 
 <property name="file" value=""/>
 
-    <property name="ant.build.javac.target" value="1.5" />
-    <property name="ant.build.javac.source" value="1.5" />
+    <property name="ant.build.javac.target" value="1.6" />
+    <property name="ant.build.javac.source" value="1.6" />
 	<property name="version" value="2.2.0"/>
 	<property name="deprecation" value="on"/>
 	<property name="Specification-Title" value="BeanShell2" />
 	<property name="Specification-Version" value="${version}" />
 	<property name="Specification-Vendor" value="http://www.beanshell.org/" />
-	<property name="Implementation-Vendor" value="http://code.google.com/p/beanshell2" />
+	<property name="Implementation-Vendor" value="https://github.com/jimjag/beanshell2" />
 
 	<!-- choose an alternate compiler -->
 	<!-- 
@@ -39,6 +39,9 @@
 	<property name="test-src-dir" value="tests/src" />
 	<property name="javadoc-dir" value="javadoc" />
 	<property name="bsf-src-dir" value="bsf/src" />
+	<property name="engine-src-dir" value="engine/src" />
+	<property name="engine-config" 
+		value="engine/config/javax.script.ScriptEngineFactory" />
 
 	<property name="javacc-lib" 
 		value="${lib-dir}/javacc.jar"/>
@@ -174,8 +177,8 @@
 			debug="on"
 			includes="**/*.java"
 			excludes="${excludes},**/bak/**"
-			source="1.5"
-			target="1.5"
+			source="1.6"
+			target="1.6"
 		>
 			<classpath>
 				<fileset refid="lib-fileset"/>
@@ -201,15 +204,16 @@
 		<!-- exclude the ${excludes} as well as anything under a "bak" dir -->
 		<!--compiler="${build-compiler}"-->
 		
-		<javac srcdir="${src-dir}:${bsf-src-dir}"
+		<javac
+		    srcdir="${src-dir}:${test-src-dir}:${bsf-src-dir}:${engine-src-dir}:${classgen-src-dir}"
 			destdir="${build-dir}"
 			deprecation="${deprecation}"
 			optimize="on"
 			debug="on"
 			includes="**/*.java"
 			excludes="${excludes},**/bak/**"
-			source="1.5"
-			target="1.5"
+			source="1.6"
+			target="1.6"
 		>
 			<classpath>
 				<fileset refid="lib-fileset"/>
@@ -225,6 +229,13 @@
 <!-- need to break this into a separate target to use exclude -->
 				<!-- install the servlet stuff -->
 				<patternset refid="bshservlet-patternset"/>
+			</fileset>
+
+			<!-- install bsh commands used in tests -->
+			<fileset dir="${test-src-dir}">
+				<patternset>
+					<include name="**/*.bsh"/>
+				</patternset>
 			</fileset>
 		</copy>
 
@@ -491,7 +502,7 @@
 	</target>
 	
 	<!-- Make all of the dist jars -->
-	<target name="dist" depends="_distdir,compile-all,jarcore,jarall,javadoc,zipsrc,bshservlet-war,bshservlet-wbsh-war,bshdoc">
+	<target name="dist" depends="_distdir,compile-all,jarcore,jarall,javadoc,zipsrc,jarsrc,pom,bshservlet-war,bshservlet-wbsh-war,bshdoc">
 
 		<antcall target="jarfileset">
 			<param name="target-jar" value="${commands-jar}"/>

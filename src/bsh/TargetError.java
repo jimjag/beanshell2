@@ -77,11 +77,26 @@ public final class TargetError extends EvalError
 			return target;
 	}
 
+	public String toString() 
+	{
+		return super.toString() 
+			+ "\nTarget exception: " + 
+			printTargetError( getCause() );
+	}
+
 	public String getMessage() 
 	{
 		return super.getMessage() 
 			+ "\nTarget exception: " + 
 			printTargetError( getCause() );
+	}
+
+    public void printStackTrace() { 
+		printStackTrace( false, System.err );
+	}
+
+    public void printStackTrace( PrintStream out ) { 
+		printStackTrace( false, out );
 	}
 
     public void printStackTrace( boolean debug, PrintStream out ) {

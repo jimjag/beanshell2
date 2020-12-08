@@ -156,7 +156,22 @@ public class ExternalNameSpace extends NameSpace
 
 		return var;
     }
-	
+
+	public Variable createVariable(
+		String name, Class type, Object value, Modifiers mods )
+	{
+		LHS lhs = new LHS( externalMap, name );
+		// Is this race condition worth worrying about?
+		// value will appear in map before it's really in the interpreter
+		try {
+			lhs.assign( value, false/*strict*/ );
+		} catch ( UtilEvalError e) {
+			throw new InterpreterError( e.toString() );
+		}
+		return new Variable( name, type, lhs );
+	}
+
+
 	/**
 	*/
 	/*
