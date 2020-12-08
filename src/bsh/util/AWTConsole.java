@@ -219,9 +219,8 @@ public class AWTConsole extends TextArea
 		let us set us set a caret position greater than the text length.
 		Great.  What a piece of crap.
 	*/
-	public void setCaretPosition( int pos ) {
-		((java.awt.peer.TextComponentPeer)getPeer()).setCaretPosition( 
-			pos + countNLs() );
+	public synchronized void setCaretPosition( int pos ) {
+        super.setCaretPosition( pos + countNLs() );
 	}
 
 	/*
@@ -325,7 +324,7 @@ public class AWTConsole extends TextArea
 		final Frame f = new Frame("Bsh Console");
 		f.add(console, "Center");
 		f.pack();
-		f.show();
+		f.setVisible(true);
 		f.addWindowListener( new WindowAdapter() {
 			public void windowClosing( WindowEvent e ) {
 				f.dispose();
