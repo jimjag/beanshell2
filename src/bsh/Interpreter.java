@@ -313,9 +313,9 @@ public class Interpreter
 		}
 
 		// bsh.interactive
-		setu( "bsh.interactive", new Primitive(interactive) );
+		setu( "bsh.interactive", interactive ? Primitive.TRUE : Primitive.FALSE );
 		// bsh.evalOnly
-		setu( "bsh.evalOnly", new Primitive(evalOnly) );
+		setu( "bsh.evalOnly", evalOnly ? Primitive.TRUE : Primitive.FALSE );
 	}
 
 	/**

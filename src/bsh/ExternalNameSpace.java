@@ -1,3 +1,28 @@
+/*****************************************************************************
+ * Licensed to the Apache Software Foundation (ASF) under one                *
+ * or more contributor license agreements.  See the NOTICE file              *
+ * distributed with this work for additional information                     *
+ * regarding copyright ownership.  The ASF licenses this file                *
+ * to you under the Apache License, Version 2.0 (the                         *
+ * "License"); you may not use this file except in compliance                *
+ * with the License.  You may obtain a copy of the License at                *
+ *                                                                           *
+ *     http://www.apache.org/licenses/LICENSE-2.0                            *
+ *                                                                           *
+ * Unless required by applicable law or agreed to in writing,                *
+ * software distributed under the License is distributed on an               *
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY                    *
+ * KIND, either express or implied.  See the License for the                 *
+ * specific language governing permissions and limitations                   *
+ * under the License.                                                        *
+ *                                                                           *
+ *                                                                           *
+ * This file is part of the BeanShell Java Scripting distribution.           *
+ * Documentation and updates may be found at http://www.beanshell.org/       *
+ * Patrick Niemeyer (pat@pat.net)                                            *
+ * Author of Learning Java, O'Reilly & Associates                            *
+ *                                                                           *
+ *****************************************************************************/
 package	bsh;
 
 import java.util.List;
@@ -77,16 +102,6 @@ public class ExternalNameSpace extends NameSpace
 
 	/**
 	*/
-    void setVariable( 
-		String name, Object value, boolean strictJava, boolean recurse ) 
-		throws UtilEvalError 
-	{
-		super.setVariable( name, value, strictJava, recurse );
-		putExternalMap( name, value );
-	}
-
-	/**
-	*/
 	public void unsetVariable( String name )
 	{
 		super.unsetVariable( name );
@@ -108,12 +123,17 @@ public class ExternalNameSpace extends NameSpace
 	/**
 	*/
 	/*
-		Notes: This implmenetation of getVariableImpl handles the following
+		Notes: This implementation of getVariableImpl handles the following
 		cases:
 		1) var in map not in local scope - var was added through map
 		2) var in map and in local scope - var was added through namespace
 		3) var not in map but in local scope - var was removed via map
 		4) var not in map and not in local scope - non-existent var
+
+		Note: It would seem that we could simply override getImportedVar()
+		in NameSpace, rather than this higher level method.  However we need
+		more control here to change the import precedence and remove variables
+		if they are removed via the extenal map.
 	*/
     protected Variable getVariableImpl( String name, boolean recurse ) 
 		throws UtilEvalError
@@ -141,10 +161,10 @@ public class ExternalNameSpace extends NameSpace
 			Variable localVar = super.getVariableImpl( name, false );
 
 			// If not in local scope then it was added via the external map,
-			// we'll wrap it and pass it along.  Else we'll use the local
-			// version.
+			// we'll wrap it and pass it along.  Else we'll use the one we
+			// found.
 			if ( localVar == null ) 
-				var = new Variable( name, (Class)null, value, (Modifiers)null );
+				var = createVariable( name, null/*type*/, value, null/*mods*/ );
 			else
 				var = localVar;
 		}
@@ -216,28 +236,5 @@ public class ExternalNameSpace extends NameSpace
 		externalMap.clear();
 	}
 
-	/**
-		Place an unwrapped value in the external map.
-		BeanShell primitive types are represented by their object wrappers, so
-		it is not possible to differentiate between wrapper types and primitive
-		types via the external Map.
-	*/
-	protected void putExternalMap( String name, Object value ) 
-	{
-		if ( value instanceof Variable )
-			try {
-				value = unwrapVariable( (Variable)value );
-			} catch ( UtilEvalError ute ) {
-				// There should be no case for this.  unwrapVariable throws
-				// UtilEvalError in some cases where it holds an LHS or array
-				// index.
-				throw new InterpreterError("unexpected UtilEvalError");
-			}
-
-		if ( value instanceof Primitive )
-			value = Primitive.unwrap( (Primitive)value );
-
-		externalMap.put( name, value );
-	}
 }
 

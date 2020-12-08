@@ -1,35 +1,29 @@
 /*****************************************************************************
+ * Licensed to the Apache Software Foundation (ASF) under one                *
+ * or more contributor license agreements.  See the NOTICE file              *
+ * distributed with this work for additional information                     *
+ * regarding copyright ownership.  The ASF licenses this file                *
+ * to you under the Apache License, Version 2.0 (the                         *
+ * "License"); you may not use this file except in compliance                *
+ * with the License.  You may obtain a copy of the License at                *
+ *                                                                           *
+ *     http://www.apache.org/licenses/LICENSE-2.0                            *
+ *                                                                           *
+ * Unless required by applicable law or agreed to in writing,                *
+ * software distributed under the License is distributed on an               *
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY                    *
+ * KIND, either express or implied.  See the License for the                 *
+ * specific language governing permissions and limitations                   *
+ * under the License.                                                        *
+ *                                                                           *
  *                                                                           *
  *  This file is part of the BeanShell Java Scripting distribution.          *
  *  Documentation and updates may be found at http://www.beanshell.org/      *
- *                                                                           *
- *  Sun Public License Notice:                                               *
- *                                                                           *
- *  The contents of this file are subject to the Sun Public License Version  *
- *  1.0 (the "License"); you may not use this file except in compliance with *
- *  the License. A copy of the License is available at http://www.sun.com    * 
- *                                                                           *
- *  The Original Code is BeanShell. The Initial Developer of the Original    *
- *  Code is Pat Niemeyer. Portions created by Pat Niemeyer are Copyright     *
- *  (C) 2000.  All Rights Reserved.                                          *
- *                                                                           *
- *  GNU Public License Notice:                                               *
- *                                                                           *
- *  Alternatively, the contents of this file may be used under the terms of  *
- *  the GNU Lesser General Public License (the "LGPL"), in which case the    *
- *  provisions of LGPL are applicable instead of those above. If you wish to *
- *  allow use of your version of this file only under the  terms of the LGPL *
- *  and not to allow others to use your version of this file under the SPL,  *
- *  indicate your decision by deleting the provisions above and replace      *
- *  them with the notice and other provisions required by the LGPL.  If you  *
- *  do not delete the provisions above, a recipient may use your version of  *
- *  this file under either the SPL or the LGPL.                              *
- *                                                                           *
  *  Patrick Niemeyer (pat@pat.net)                                           *
  *  Author of Learning Java, O'Reilly & Associates                           *
- *  http://www.pat.net/~pat/                                                 *
  *                                                                           *
  *****************************************************************************/
+
 
 
 package bsh;
@@ -75,19 +69,6 @@ class LHS implements ParserConstants, java.io.Serializable
 	int index;
 
 /**
-		Variable LHS constructor.
-*/
-	LHS( NameSpace nameSpace, String varName )
-	{
-throw new Error("namespace lhs");
-/*
-		type = VARIABLE;
-		this.varName = varName;
-		this.nameSpace = nameSpace;
-*/
-	}
-
-	/**
 		@param localVar if true the variable is set directly in the This
 		reference's local scope.  If false recursion to look for the variable
 		definition in parent's scope is allowed. (e.g. the default case for
@@ -154,7 +135,8 @@ throw new Error("namespace lhs");
 	public Object getValue() throws UtilEvalError
 	{
 		if ( type == VARIABLE )
-			return nameSpace.getVariable( varName );
+			return nameSpace.getVariableOrProperty( varName, null );
+			// return nameSpace.getVariable( varName );
 
 		if (type == FIELD)
 			try {
@@ -165,13 +147,20 @@ throw new Error("namespace lhs");
 			}
 
 		if ( type == PROPERTY )
+		{
+			// return the raw type here... we don't know what it's supposed
+			// to be...
+			CollectionManager cm = CollectionManager.getCollectionManager();
+			if ( cm.isMap( object ) )
+				return cm.getFromMap( object/*map*/, propName );
+			else
 			try {
 				return Reflect.getObjectProperty(object, propName);
-			}
-			catch(ReflectError e) {
+				} catch(ReflectError e) {
 				Interpreter.debug(e.getMessage());
 				throw new UtilEvalError("No such property: " + propName);
 			}
+		}
 
 		if ( type == INDEX )
 			try {
@@ -230,13 +219,9 @@ throw new Error("namespace lhs");
 		else 
 		if ( type == PROPERTY )
 		{
-			/*
-			if ( object instanceof Hashtable )
-				((Hashtable)object).put(propName, val);
-			*/
 			CollectionManager cm = CollectionManager.getCollectionManager();
 			if ( cm.isMap( object ) )
-				cm.putInMap( object/*map*/, propName, val );
+				cm.putInMap( object/*map*/, propName, Primitive.unwrap(val) );
 			else
 				try {
 					Reflect.setObjectProperty(object, propName, val);

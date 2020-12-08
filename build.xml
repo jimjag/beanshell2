@@ -56,13 +56,17 @@
 
 	<!-- Uncomment to build under JDK1.1 without warnings 
 	<property name="exclude-1.1" 
-		value="bsh/JThis.java,bsh/classpath/*,bsh/util/*,bsh/reflect/*"/>
+		value="bsh/JThis.java,bsh/classpath/*,bsh/util/*,bsh/reflect/*,bsh/ExternalNameSpace.java"/>
 	-->
 
 	<!-- Uncomment to build without making the BSF adapter 
-	-->
 	<property name="exclude-bsf" 
 		value="bsh/util/BeanShellBSFEngine.java,TestBshBSF.java"/>
+	-->
+
+	<!-- Uncomment to build without making the javax.script (JSR223) adapter 
+	<property name="exclude-engine" value="bsh/engine/**"/>
+	-->
 
 	<!-- Uncomment to build without the ASM class generator code.
 	<property name="exclude-classgen" 
@@ -87,12 +91,14 @@
 	<!--  Add up all of the excludes -->
 	<!-- how do I add strings to break this long line? -->
 	<property name="excludes" 
-		value="${exclude-1.2},${exclude-1.1},${exclude-bsf},${exclude-servlet},${excludes-legacy},${exclude-classgen},${excludes-arbitrary}"/>
+		value="${exclude-1.2},${exclude-1.1},${exclude-bsf},${exclude-engine},${exclude-servlet},${excludes-legacy},${exclude-classgen},${excludes-arbitrary}"/>
 
 	<!-- JARs -->
 	<property name="javadoc-zip" value="${dist-dir}/bsh-${version}-javadoc.zip"/>
 	<property name="core-jar" value="${dist-dir}/bsh-core-${version}.jar"/>
 	<property name="src-zip" value="${dist-dir}/bsh-${version}-src.zip"/>
+	<property name="src-jar" value="${dist-dir}/bsh-${version}-sources.jar"/>
+	<property name="pom" value="${dist-dir}/bsh-${version}.pom"/>
 	<property name="all-jar-name" value="bsh-${version}.jar"/>
 	<property name="all-jar" value="${dist-dir}/${all-jar-name}"/>
 	<property name="commands-jar" 
@@ -103,6 +109,7 @@
 		value="${dist-dir}/bsh-reflect-${version}.jar"/>
 	<property name="util-jar" value="${dist-dir}/bsh-util-${version}.jar"/>
 	<property name="bsf-jar" value="${dist-dir}/bsh-bsf-${version}.jar"/>
+	<property name="engine-jar" value="${dist-dir}/bsh-engine-${version}.jar"/>
 	<property name="classgen-jar" value="${dist-dir}/bsh-classgen-${version}.jar"/>
 	<property name="bshservlet-wbsh-war" 
 		value="${dist-dir}/bshservlet-wbsh.war"/>
@@ -220,11 +227,14 @@
 				<patternset refid="bshservlet-patternset"/>
 			</fileset>
 		</copy>
+
+		<!-- Install the javax.script engine factory config -->
+		<copy file="${engine-config}" todir="${build-dir}/META-INF/services" />
+
 		<tstamp>
 			<format property="DATE" pattern="yyyy-MM-dd hh:mm:ss" />
 		</tstamp>
 	</target>
-
 
 	<target name="javadoc" depends="compile">
 		<mkdir dir="${javadoc-dir}" />
@@ -233,6 +243,7 @@
 			 destdir="${javadoc-dir}"
 			 author="true"
 			 version="true"
+       source="1.5"
 			 use="true"
 			 windowtitle="BeanShell2 ${version}"
 			 doctitle="&lt;h1&gt;BeanShell2 ${version}&lt;h1&gt;"
@@ -265,6 +276,7 @@
 		<delete quiet="true" file="${commands-jar}"/>
 		<delete quiet="true" file="${reflect-jar}"/>
 		<delete quiet="true" file="${bsf-jar}"/>
+		<delete quiet="true" file="${engine-jar}"/>
 		<delete quiet="true" file="${classgen-jar}"/>
 		<delete quiet="true" file="${bshservlet-wbsh-war}"/>
 		<delete quiet="true" file="${bshservlet-war}"/>
@@ -323,6 +335,13 @@
 		</patternset>
 	</fileset>
 
+	<fileset id="engine-fileset" dir="${build-dir}">
+		<patternset>
+			<include name="bsh/engine/**.class"/>
+			<include name="META-INF/services/javax.script*"/>
+		</patternset>
+	</fileset>
+
 	<fileset id="classgen-fileset" dir="${build-dir}">
 		<patternset>
 			<include name="bsh/ClassGeneratorImpl*.class"/>
@@ -347,6 +366,7 @@
 		<patternset id="commands-bsh-patternset">
 			<include name="bsh/commands/*.bsh"/>
 			<exclude name="CVS"/>
+			<exclude name=".svn"/>
 		</patternset>
 	</fileset>
 
@@ -358,6 +378,7 @@
 		<patternset id="util-lib-patternset">
 			<include name="bsh/util/lib/*"/>
 			<exclude name="CVS"/>
+			<exclude name=".svn"/>
 		</patternset>
 	</fileset>
 
@@ -407,6 +428,7 @@
 			<fileset refid="util-fileset"/>
 			<fileset refid="commands-fileset"/>
 			<fileset refid="bsf-fileset"/>
+			<fileset refid="engine-fileset"/>
 			<fileset refid="classgen-fileset"/>
 			<fileset refid="bshservlet-fileset"/>
 <!-- hack, see core-fileset -->
@@ -431,8 +453,23 @@
 				<exclude name="javadoc/**/*"/>
 				<!--exclude name="docs/**/*"/-->
 				<exclude name="**/CVS"/>
+				<exclude name="**/.svn"/>
 			</zipfileset>
 		</zip>
+	</target>
+	<target name="jarsrc" depends="_distdir">
+		<delete file="${src-jar}"/>
+		<zip zipfile="${src-jar}">
+			<zipfileset dir="src" prefix="">
+				<include name="**/*.java"/>
+				<exclude name="**/CVS"/>
+				<exclude name="**/.svn"/>
+			</zipfileset>
+		</zip>
+	</target>
+	<target name="pom" depends="_distdir">
+		<delete file="${pom}"/>
+		<copy file="pom.xml" tofile="${pom}" />
 	</target>
 
 	<target name="_distdir">
@@ -487,6 +524,12 @@
 		</antcall>
 
 		<antcall target="jarfileset">
+			<param name="target-jar" value="${engine-jar}"/>
+			<param name="specification-title" value="BeanShell JSR223 Engine"/>
+			<param name="fileset" value="engine-fileset"/>
+		</antcall>
+
+		<antcall target="jarfileset">
 			<param name="target-jar" value="${classgen-jar}"/>
 			<param name="specification-title" value="BeanShell classgen"/>
 			<param name="fileset" value="classgen-fileset"/>
@@ -494,6 +537,13 @@
 
 		<delete file="${javadoc-zip}"/>
 		<zip zipfile="${javadoc-zip}" basedir="${javadoc-dir}"/>
+                <checksum fileext=".sha1" algorithm="SHA" forceoverwrite="true">
+                   <fileset dir="${dist-dir}">
+                     <include name="*.zip" />
+                     <include name="*.jar" />
+                     <include name="*.pom" />
+                   </fileset>
+                </checksum>
 
 		<!-- Build the documentation -->
 		<!-- Don't build the documentation right now.
