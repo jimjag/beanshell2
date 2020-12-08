@@ -68,7 +68,7 @@ public class Variable implements java.io.Serializable
 
 		if ( lhs != null )
 		{
-			lhs.assign( Primitive.unwrap(value), false/*strictjava*/ );
+			lhs.assign( value, false/*strictjava*/ );
 			return;
 		}
 
@@ -91,8 +91,7 @@ public class Variable implements java.io.Serializable
 		throws UtilEvalError
 	{ 
 		if ( lhs != null )
-			return type == null ?
-				lhs.getValue() : Primitive.wrap( lhs.getValue(), type );
+			return lhs.getValue();
 
 		return value; 
 	}

@@ -31,7 +31,6 @@
  *                                                                           *
  *****************************************************************************/
 
-
 package bsh.classpath;
 
 public interface ClassPathListener {

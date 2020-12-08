@@ -31,7 +31,6 @@
  *                                                                           *
  *****************************************************************************/
 
-
 package bsh;
 
 import java.io.IOException;
@@ -71,7 +70,7 @@ import java.util.WeakHashMap;
 
 	Note on version dependency:  This base class is JDK 1.1 compatible,
 	however we are forced to use weak references in the full featured
-	implementation (the optional bsh.classpath package) to accommodate all of
+	implementation (the optional bsh.classpath package) to accomodate all of
 	the fleeting namespace listeners as they fall out of scope.  (NameSpaces
 	must be informed if the class space changes so that they can un-cache
 	names).  
@@ -131,9 +130,6 @@ public class BshClassManager
 			m.resolvedStaticMethods = new Hashtable<SignatureKey,Method>();
 		}
 	}
-
-	/** @see #associateClass( Class ) */
-	protected transient Hashtable associatedClasses = new Hashtable();
 
 	/**
 		Create a new instance of the class manager.  
@@ -296,30 +292,6 @@ public class BshClassManager
 			absoluteClassCache.put( name, value );
 		else
 			absoluteNonClasses.add( name );
-	}
-
-	/**
-	 * Associate a persistent generated class implementation with this
-	 * interpreter.  An associated class will be used in lieu of generating
-	 * bytecode when a scripted class of the same name is encountered.
-	 * When such a class is defined in the script it will cause the associated
-	 * existing class implementation to be initialized (with the static
-	 * initializer field).  This is utilized by the persistent class generator
-	 * to allow a generated class to bootstrap an interpreter and rendesvous
-	 * with its implementation script.
-	 *
-	 * Class associations currently last for the life of the class manager.
-	 */
-	public void associateClass( Class clas )
-	{
-		// TODO should check to make sure it's a generated class here
-		// just need to add a method to classgenerator API to test it
-		associatedClasses.put( clas.getName(), clas );
-	}
-
-	public Class getAssociatedClass( String name )
-	{
-		return (Class)associatedClasses.get( name );
 	}
 
 	/**
@@ -519,7 +491,7 @@ public class BshClassManager
 		if ( cur != null )
 			throw new InterpreterError("Defining class problem: "+className 
 				+": BeanShell cannot yet simultaneously define two or more "
-				+"dependent classes of the same name.  Attempt to define: "
+				+"dependant classes of the same name.  Attempt to define: "
 				+ className +" while defining: "+cur 
 			);
 		definingClasses.add( className );

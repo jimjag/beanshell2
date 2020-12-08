@@ -31,13 +31,11 @@
  *                                                                           *
  *****************************************************************************/
 
-
 package bsh;
 
 import java.util.*;
 
-public class StringUtil
-{
+public class StringUtil {
 
 	public static String [] split( String s, String delim) {
 		List<String> v = new ArrayList<String>();

@@ -32,7 +32,6 @@
  *****************************************************************************/
 
 
-
 package bsh;
 
 /**
@@ -59,7 +58,7 @@ class BSHBinaryExpression extends SimpleNode
         {
 			// null object ref is not instance of any type
 			if ( lhs == Primitive.NULL )
-				return Primitive.FALSE;
+				return new Primitive(false);
 
             Class rhs = ((BSHType)jjtGetChild(1)).getType( 
 				callstack, interpreter );
@@ -76,9 +75,9 @@ class BSHBinaryExpression extends SimpleNode
 			*/
 			if ( lhs instanceof Primitive )
 				if ( rhs == bsh.Primitive.class )
-					return Primitive.TRUE;
+					return new Primitive(true);
 				else
-					return Primitive.FALSE;
+					return new Primitive(false);
 
 			// General case - performe the instanceof based on assignability
             boolean ret = Types.isJavaBaseAssignable( rhs, lhs.getClass() );
@@ -99,7 +98,7 @@ class BSHBinaryExpression extends SimpleNode
 				obj = ((Primitive)lhs).getValue();
 			if ( obj instanceof Boolean && 
 				( ((Boolean)obj).booleanValue() == false ) )
-				return Primitive.FALSE;
+				return new Primitive(false);
 		}
 		/*
 			Look ahead and short circuit evaluation of the rhs if:
@@ -111,7 +110,7 @@ class BSHBinaryExpression extends SimpleNode
 				obj = ((Primitive)lhs).getValue();
 			if ( obj instanceof Boolean && 
 				( ((Boolean)obj).booleanValue() == true ) )
-				return Primitive.TRUE;
+				return new Primitive(true);
 		}
 
 		// end stuff that was tacked on for boolean short-circuiting.
@@ -183,10 +182,10 @@ class BSHBinaryExpression extends SimpleNode
         switch(kind)
         {
             case EQ:
-                return (lhs == rhs) ? Primitive.TRUE : Primitive.FALSE;
+                return new Primitive((lhs == rhs));
 
             case NE:
-                return (lhs != rhs) ? Primitive.TRUE : Primitive.FALSE;
+                return new Primitive((lhs != rhs));
 
             case PLUS:
                 if(lhs instanceof String || rhs instanceof String)

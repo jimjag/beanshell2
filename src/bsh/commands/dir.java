@@ -40,9 +40,7 @@ public class dir
 		Interpreter env, CallStack callstack, String dir ) 
 	{
 		File file;
-		String path;
 		try {
-			path = env.pathToFile( dir ).getAbsolutePath();
 			file =  env.pathToFile( dir );
 		} catch (IOException e ) {
 			env.println("error reading path: "+e);
@@ -58,11 +56,11 @@ public class dir
 		}
 
 		String [] files = file.list();
-		files = StringUtil.bubbleSort(files);
+		Arrays.sort(files);
 
 		for( int i=0; i< files.length; i++ ) {
-			File f = new File( path + File.separator + files[i] );
-			StringBuffer sb = new StringBuffer();
+			File f = new File( dir + File.separator + files[i] );
+			StringBuilder sb = new StringBuilder();
 			sb.append( f.canRead() ? "r": "-" );
 			sb.append( f.canWrite() ? "w": "-" );
 			sb.append( "_" );
@@ -80,7 +78,7 @@ public class dir
 
 			// hack to get fixed length 'length' field
 			int fieldlen = 8;
-			StringBuffer len = new StringBuffer();
+			StringBuilder len = new StringBuilder();
 			for(int j=0; j<fieldlen; j++)
 				len.append(" ");
 			len.insert(0, f.length());

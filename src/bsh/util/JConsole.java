@@ -31,7 +31,6 @@
  *                                                                           *
  *****************************************************************************/
 
-
 package	bsh.util;
 
 import java.awt.Component;
@@ -465,18 +464,12 @@ public class JConsole extends JScrollPane
 		StringBuilder buf = new StringBuilder(); 
 		int lineLength = line.length(); 
 		for(int i=0; i<lineLength; i++) {  
-				char c = line.charAt(i);
-				if(c>127) {
-					String val = Integer.toString(c, 16); 
+				String val = Integer.toString(line.charAt(i), 16); 
 				val=ZEROS.substring(0,4-val.length()) + val;
 				buf.append("\\u" + val);
-				} else {
-					buf.append(c);
-				}
 		} 
 		line = buf.toString();
 		// End unicode patch
-
 
 		if (outPipe == null )
 			print("Console internal	error: cannot output ...", Color.red);

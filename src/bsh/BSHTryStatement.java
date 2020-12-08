@@ -32,7 +32,6 @@
  *****************************************************************************/
 
 
-
 package bsh;
 
 import java.util.List;
@@ -63,7 +62,7 @@ class BSHTryStatement extends SimpleNode
 			catchBlocks.add((BSHBlock)jjtGetChild(i++));
 			node = null;
 		}
-		// finally block
+		// finaly block
 		BSHBlock finallyBlock = null;
 		if(node != null)
 			finallyBlock = (BSHBlock)node;

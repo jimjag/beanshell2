@@ -29,7 +29,7 @@
 <xsl:param name="pagesdir"/>
 
 <!-- Output directives -->
-<xsl:output method="html" indent="no"/>
+<xsl:output method="xhtml" indent="no"/>
 
 <!-- 
 	Root

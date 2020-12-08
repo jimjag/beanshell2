@@ -275,7 +275,7 @@ public class Interpreter
 		this( new StringReader(""), 
 			System.out, System.err, false, null );
 		evalOnly = true;
-		setu( "bsh.evalOnly", Primitive.TRUE );
+		setu( "bsh.evalOnly", new Primitive(true) );
 	}
 
 	// End constructors
@@ -313,9 +313,9 @@ public class Interpreter
 		}
 
 		// bsh.interactive
-		setu( "bsh.interactive", interactive ? Primitive.TRUE : Primitive.FALSE );
+		setu( "bsh.interactive", new Primitive(interactive) );
 		// bsh.evalOnly
-		setu( "bsh.evalOnly", evalOnly ? Primitive.TRUE : Primitive.FALSE );
+		setu( "bsh.evalOnly", new Primitive(evalOnly) );
 	}
 
 	/**
@@ -663,14 +663,6 @@ public class Interpreter
 						node.lastToken.next = null;  // prevent OutOfMemoryError
 
 					node = (SimpleNode)localInterpreter.get_jjtree().rootNode();
-					// quick filter for when we're running as a compiler only
-					if ( getSaveClasses()
-						&& !(node instanceof BSHClassDeclaration)
-						&& !(node instanceof BSHImportDeclaration )
-						&& !(node instanceof BSHPackageDeclaration )
-					)
-						continue;
-
 					// nodes remember from where they were sourced
 					node.setSourceFile( sourceFileInfo );
 
@@ -707,10 +699,11 @@ public class Interpreter
 				e.setErrorSourceFile( sourceFileInfo );
 				throw e;
 
-            } catch ( InterpreterError e ) {
-                final EvalError evalError = new EvalError("Sourced file: " + sourceFileInfo + " internal Error: " + e.getMessage(), node, callstack);
-                evalError.initCause(e);
-                throw evalError;
+			} catch ( InterpreterError e ) {
+				e.printStackTrace();
+				throw new EvalError(
+					"Sourced file: "+sourceFileInfo+" internal Error: " 
+					+ e.getMessage(), node, callstack);
 			} catch ( TargetError e ) {
 				// failsafe, set the Line as the origin of the error.
 				if ( e.getNode()==null )
@@ -723,14 +716,16 @@ public class Interpreter
 				if ( e.getNode()==null )
 					e.setNode( node );
 				e.reThrow( "Sourced file: "+sourceFileInfo );
-            } catch ( Exception e) {
-                final EvalError evalError = new EvalError("Sourced file: " + sourceFileInfo + " unknown error: " + e.getMessage(), node, callstack);
-                evalError.initCause(e);
-                throw evalError;
+			} catch ( Exception e) {
+				if ( DEBUG)
+					e.printStackTrace();
+				throw new EvalError(
+					"Sourced file: "+sourceFileInfo+" unknown error: " 
+					+ e.getMessage(), node, callstack, e);
 			} catch(TokenMgrError e) {
-                final EvalError evalError = new EvalError("Sourced file: " + sourceFileInfo + " Token Parsing Error: " + e.getMessage(), node, callstack);
-                evalError.initCause(e);
-                throw evalError;
+				throw new EvalError(
+					"Sourced file: "+sourceFileInfo+" Token Parsing Error: " 
+					+ e.getMessage(), node, callstack, e );
 			} finally {
 				localInterpreter.get_jjtree().reset();
 
@@ -925,7 +920,7 @@ public class Interpreter
 		set(name, new Primitive(value));
 	}
 	public void set(String name, boolean value) throws EvalError {
-        set(name, value ? Primitive.TRUE : Primitive.FALSE);
+		set(name, new Primitive(value));
 	}
 
 	/**
@@ -1255,13 +1250,6 @@ public class Interpreter
 		return showResults;
 	}
 
-	public static String getSaveClassesDir() {
-		return System.getProperty("saveClasses");
-	}
-
-	public static boolean getSaveClasses()  {
-		return getSaveClassesDir() != null;
-	}
 
 	public static void setShutdownOnExit(final boolean value) {
 		try {

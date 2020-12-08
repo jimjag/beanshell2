@@ -75,9 +75,9 @@ public class ExternalNameSpace extends NameSpace
 		this.externalMap = map ; 
 	}
 
-    /**
+	/**
 	*/
-	void setVariable( 
+    void setVariable( 
 		String name, Object value, boolean strictJava, boolean recurse ) 
 		throws UtilEvalError 
 	{
@@ -108,17 +108,12 @@ public class ExternalNameSpace extends NameSpace
 	/**
 	*/
 	/*
-		Notes: This implementation of getVariableImpl handles the following
+		Notes: This implmenetation of getVariableImpl handles the following
 		cases:
 		1) var in map not in local scope - var was added through map
 		2) var in map and in local scope - var was added through namespace
 		3) var not in map but in local scope - var was removed via map
 		4) var not in map and not in local scope - non-existent var
-
-		Note: It would seem that we could simply override getImportedVar()
-		in NameSpace, rather than this higher level method.  However we need
-		more control here to change the import precedence and remove variables
-		if they are removed via the extenal map.
 	*/
     protected Variable getVariableImpl( String name, boolean recurse ) 
 		throws UtilEvalError
@@ -146,32 +141,17 @@ public class ExternalNameSpace extends NameSpace
 			Variable localVar = super.getVariableImpl( name, false );
 
 			// If not in local scope then it was added via the external map,
-			// we'll wrap it and pass it along.  Else we'll use the one we
-			// found.
+			// we'll wrap it and pass it along.  Else we'll use the local
+			// version.
 			if ( localVar == null ) 
-				var = createVariable( name, null/*type*/, value, null/*mods*/ );
+				var = new Variable( name, (Class)null, value, (Modifiers)null );
 			else
 				var = localVar;
 		}
 
 		return var;
     }
-
-	public Variable createVariable(
-		String name, Class type, Object value, Modifiers mods )
-	{
-		LHS lhs = new LHS( externalMap, name );
-		// Is this race condition worth worrying about?
-		// value will appear in map before it's really in the interpreter
-		try {
-			lhs.assign( value, false/*strict*/ );
-		} catch ( UtilEvalError e) {
-			throw new InterpreterError( e.toString() );
-		}
-		return new Variable( name, type, lhs );
-	}
-
-
+	
 	/**
 	*/
 	/*

@@ -31,7 +31,6 @@
  *                                                                           *
  *****************************************************************************/
 
-
 package bsh;
 
 /**
@@ -130,22 +129,6 @@ class Types
 		}
 	}
 
-	/**
-	 * Are the two signatures exactly equal? This is checked for a special
-	 * case in overload resolution.
-	 */
-	static boolean areSignaturesEqual(Class[] from, Class[] to)
-	{
-		if (from.length != to.length)
-			return false;
-
-		for (int i = 0; i < from.length; i++)
-			if (from[i] != to[i])
-				return false;
-
-		return true;
-	}	
-	
 	private static boolean isSignatureVarargsAssignable(
 		Class[] from, Class[] to )
 	{

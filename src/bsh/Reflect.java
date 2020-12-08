@@ -196,8 +196,7 @@ final class Reflect {
 	 */
 	public static Object getObjectFieldValue(Object object, String fieldName) throws UtilEvalError, ReflectError {
 		if (object instanceof This) {
-		    This t = (This)object;
-		    return t.namespace.getVariableOrProperty(fieldName, null);
+			return ((This) object).namespace.getVariable(fieldName);
 		} else if (object == Primitive.NULL) {
 			//noinspection ThrowableInstanceNeverThrown
 			throw new UtilTargetError(new NullPointerException("Attempt to access field '" + fieldName + "' on null value"));
@@ -679,15 +678,7 @@ final class Reflect {
 				// If idealMatch fits targetMatch and this is the first match
 				// or targetMatch is more specific than the best match, make it
 				// the new best match.
-				if ( Types.isSignatureAssignable(
-						idealMatch, targetMatch, round )
-					&& ( (bestMatch == null) ||
-						( Types.isSignatureAssignable( targetMatch, bestMatch,
-								Types.JAVA_BASE_ASSIGNABLE ) &&
-						!Types.areSignaturesEqual(targetMatch, bestMatch) )
-						)
-				)
-				{
+				if (Types.isSignatureAssignable(idealMatch, targetMatch, round) && ((bestMatch == null) || Types.isSignatureAssignable(targetMatch, bestMatch, Types.JAVA_BASE_ASSIGNABLE))) {
 					bestMatch = targetMatch;
 					bestMatchIndex = i;
 				}
@@ -702,7 +693,7 @@ final class Reflect {
 	}
 
 
-	static String accessorName(String getorset, String propName) {
+	private static String accessorName(String getorset, String propName) {
 		return getorset + String.valueOf(Character.toUpperCase(propName.charAt(0))) + propName.substring(1);
 	}
 

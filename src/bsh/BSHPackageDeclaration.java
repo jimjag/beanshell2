@@ -32,7 +32,6 @@
  *****************************************************************************/
 
 
-
 package bsh;
 
 public class BSHPackageDeclaration extends SimpleNode 

@@ -32,7 +32,6 @@
  *****************************************************************************/
 
 
-
 package bsh;
 
 class BSHPrimitiveType extends SimpleNode

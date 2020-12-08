@@ -31,7 +31,6 @@
  *                                                                           *
  *****************************************************************************/
 
-
 package bsh;
 
 class BSHFormalParameters extends SimpleNode

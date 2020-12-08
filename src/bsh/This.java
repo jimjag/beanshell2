@@ -371,7 +371,7 @@ public final class This implements java.io.Serializable, Runnable
 		// a default equals() testing for equality with the This reference
 		if ( methodName.equals("equals") && args.length==1 ) {
 			Object obj = args[0];
-			return this == obj ? Boolean.TRUE : Boolean.FALSE;
+			return new Boolean( this == obj );
 		}
 
 		// a default clone()

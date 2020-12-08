@@ -32,7 +32,6 @@
  *****************************************************************************/
 
 
-
 package bsh;
 
 import java.lang.reflect.Array;
@@ -325,7 +324,7 @@ class Name implements java.io.Serializable
 					namespace : ((This)evalBaseObject).namespace;
 			Object obj = new NameSpace( 
 				targetNameSpace, "auto: "+varName ).getThis( interpreter );
-			targetNameSpace.setVariable( varName, obj, false, evalBaseObject == null );
+			targetNameSpace.setVariable( varName, obj, false );
 			return completeRound( varName, suffix(evalName), obj );
 		}
 
@@ -461,7 +460,7 @@ class Name implements java.io.Serializable
 	/**
 		Resolve a variable relative to a This reference.
 
-		This is the general variable resolution method, accommodating special
+		This is the general variable resolution method, accomodating special
 		fields from the This context.  Together the namespace and interpreter
 		comprise the This context.  The callstack, if available allows for the
 		this.caller construct.  
@@ -593,7 +592,7 @@ class Name implements java.io.Serializable
 
 
 		if ( obj == null )
-			obj = thisNameSpace.getVariable(varName, evalBaseObject == null);
+			obj = thisNameSpace.getVariable(varName);
 
 		if ( obj == null )
 			throw new InterpreterError("null this field ref:"+varName);

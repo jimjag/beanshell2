@@ -32,7 +32,6 @@
  *****************************************************************************/
 
 
-
 package bsh;
 
 class BSHPrimaryExpression extends SimpleNode

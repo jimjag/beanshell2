@@ -31,18 +31,14 @@
  *                                                                           *
  *****************************************************************************/
 
-
 package bsh;
 
 import bsh.org.objectweb.asm.*;
 import bsh.org.objectweb.asm.Type;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
+import java.lang.reflect.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.io.*;
 
 /**
  * ClassGeneratorUtil utilizes the ASM (www.objectweb.org) bytecode generator
@@ -139,12 +135,7 @@ public class ClassGeneratorUtil implements Constants {
 	/**
 	 * @param packageName e.g. "com.foo.bar"
 	 */
-	public ClassGeneratorUtil(
-		Modifiers classModifiers, String className, String packageName,
-		Class superClass, Class [] interfaces, Variable [] vars,
-		DelayedEvalBshMethod [] bshmethods, NameSpace classStaticNameSpace, boolean isInterface
-	)
-	{
+	public ClassGeneratorUtil(Modifiers classModifiers, String className, String packageName, Class superClass, Class[] interfaces, Variable[] vars, DelayedEvalBshMethod[] bshmethods, NameSpace classStaticNameSpace, boolean isInterface) {
 		this.classModifiers = classModifiers;
 		this.className = className;
 		if (packageName != null) {
@@ -164,63 +155,36 @@ public class ClassGeneratorUtil implements Constants {
 		this.vars = vars;
 		this.classStaticNameSpace = classStaticNameSpace;
 		this.superConstructors = superClass.getDeclaredConstructors();
-		this.isInterface = isInterface;
 
-		splitMethodsAndConstructors( className, bshmethods);
-	}
-
-	/**
-		This method provides a hook for the class generator implementation to
-	 	store additional information in the class's bsh static namespace.
-	 	Currently this is used to store an array of consructors corresponding
-	 	to the constructor switch in the generated class.
-
-	 	This method must be called to initialize the static space even if we
-		are using a previously generated class.
-	*/
-	public void initStaticNameSpace(
-		NameSpace classStaticNameSpace, BSHBlock instanceInitBlock )
-	{
-		try {
-			classStaticNameSpace.setLocalVariable(
-				BSHCONSTRUCTORS, constructors, false/*strict*/ );
-			classStaticNameSpace.setLocalVariable(
-				BSHINIT, instanceInitBlock, false/*strict*/ );
-		} catch ( UtilEvalError e ) {
-			throw new InterpreterError(
-				"Unable to init class static block: "+e );
-		}
-	}
-
-	private void splitMethodsAndConstructors(
-		String className, DelayedEvalBshMethod[] bshmethods )
-	{
 		// Split the methods into constructors and regular method lists
 		List consl = new ArrayList();
 		List methodsl = new ArrayList();
-		String classBaseName = getBaseName( className ); // for inner classes
-		for( int i=0; i< bshmethods.length; i++ )
-		{
-			BshMethod bm = bshmethods[i];
-			if ( bm.getName().equals( classBaseName )
-				&& bm.getReturnType() == null
-			)
-				consl.add( bm );
-			else
-				methodsl.add( bm );
+		String classBaseName = getBaseName(className); // for inner classes
+		for (DelayedEvalBshMethod bshmethod : bshmethods) {
+			if (bshmethod.getName().equals(classBaseName)) {
+				consl.add(bshmethod);
+			} else {
+				methodsl.add(bshmethod);
+			}
 		}
 
-		this.constructors = (DelayedEvalBshMethod [])consl.toArray(
-			new DelayedEvalBshMethod[0] );
-		this.methods = (DelayedEvalBshMethod [])methodsl.toArray(
-			new DelayedEvalBshMethod[0] );
+		this.constructors = (DelayedEvalBshMethod[]) consl.toArray(new DelayedEvalBshMethod[consl.size()]);
+		this.methods = (DelayedEvalBshMethod[]) methodsl.toArray(new DelayedEvalBshMethod[methodsl.size()]);
+
+		try {
+			classStaticNameSpace.setLocalVariable(BSHCONSTRUCTORS, constructors, false/*strict*/);
+		} catch (UtilEvalError e) {
+			throw new InterpreterError("can't set cons var");
+		}
+
+		this.isInterface = isInterface;
 	}
+
 
 	/**
 	 * Generate the class bytecode for this class.
 	 */
-	public byte [] generateClass( boolean generateInitCode )
-	{
+	public byte[] generateClass() {
 		// Force the class public for now...
 		int classMods = getASMModifiers(classModifiers) | ACC_PUBLIC;
 		if (isInterface) {
@@ -236,7 +200,7 @@ public class ClassGeneratorUtil implements Constants {
 		}
 
 		String sourceFile = "BeanShell Generated via ASM (www.objectweb.org)";
-		ClassWriter cw = new ClassWriter(true);
+		ClassWriter cw = new ClassWriter(false);
 		cw.visit(classMods, fqClassName, superClassName, interfaceNames, sourceFile);
 
 		if ( ! isInterface) {
@@ -266,11 +230,6 @@ public class ClassGeneratorUtil implements Constants {
 
 			generateField(var.getName(), type, modifiers, cw);
 		}
-
-		// Generate the portion of the static initializer that bootstraps
-		// the interpreter for a cold class.
-		if ( generateInitCode )
-			generateStaticInitializer( cw );
 
 		// Generate the constructors
 		boolean hasConstructor = false;
@@ -381,7 +340,7 @@ public class ClassGeneratorUtil implements Constants {
 
 		// Generate code to push the BSHTHIS or BSHSTATIC field
 		if (isStatic) {
-			pushBshStatic( fqClassName, className, cv );
+			cv.visitFieldInsn(GETSTATIC, fqClassName, BSHSTATIC + className, "Lbsh/This;");
 		} else {
 			// Push 'this'
 			cv.visitVarInsn(ALOAD, 0);
@@ -413,8 +372,8 @@ public class ClassGeneratorUtil implements Constants {
 		// Generate code to return the value
 		generateReturnCode(returnType, cv);
 
-		// values here are ignored, computed automatically by ClassWriter
-		cv.visitMaxs( 0, 0 );
+		// Need to calculate this... just fudging here for now.
+		cv.visitMaxs(20, 20);
 	}
 
 
@@ -456,40 +415,10 @@ public class ClassGeneratorUtil implements Constants {
 
 		cv.visitInsn(RETURN);
 
-		// values here are ignored, computed automatically by ClassWriter
-		cv.visitMaxs( 0, 0 );
+		// Need to calculate this... just fudging here for now.
+		cv.visitMaxs(20, 20);
 	}
 
-	/**
-	 Generate the static initializer for the class
-	 */
-	void generateStaticInitializer( ClassWriter cw )
-	{
-		CodeVisitor cv =
-			cw.visitMethod( ACC_STATIC, "<clinit>", "()V", null/*exceptions*/ );
-
-		// Generate code to invoke the ClassGeneratorUtil initStatic() method
-
-		// Push the class name as a constant
-		cv.visitLdcInsn( fqClassName );
-
-		// Invoke Class.forName() to get our class.
-		// We do this here, as opposed to in the bsh static init helper method
-		// in order to be sure to capture the correct classloader.
-		cv.visitMethodInsn(
-			INVOKESTATIC, "java/lang/Class", "forName",
-			"(Ljava/lang/String;)Ljava/lang/Class;");
-
-		// invoke the initStatic() method
-		cv.visitMethodInsn(
-			INVOKESTATIC, "bsh/ClassGeneratorUtil", "initStatic",
-			"(Ljava/lang/Class;)V");
-
-		cv.visitInsn( RETURN );
-
-		// values here are ignored, computed automatically by ClassWriter
-		cv.visitMaxs( 0, 0 );
-	}
 
 	/**
 	 * Generate a switch with a branch for each possible alternate
@@ -520,8 +449,8 @@ public class ClassGeneratorUtil implements Constants {
 		// push super class name
 		cv.visitLdcInsn(superClass.getName()); // use superClassName var?
 
-		// Push the bsh static namespace field
-		pushBshStatic( fqClassName, className, cv );
+		// push class static This object
+		cv.visitFieldInsn(GETSTATIC, fqClassName, BSHSTATIC + className, "Lbsh/This;");
 
 		// push args
 		cv.visitVarInsn(ALOAD, argsVar);
@@ -561,14 +490,6 @@ public class ClassGeneratorUtil implements Constants {
 
 		// done with switch
 		cv.visitLabel(endLabel);
-	}
-
-	// push the class static This object
-	private static void pushBshStatic(
-		String fqClassName, String className, CodeVisitor cv )
-	{
-		cv.visitFieldInsn(
-			GETSTATIC, fqClassName, BSHSTATIC+className, "Lbsh/This;" );
 	}
 
 	/*
@@ -647,10 +568,7 @@ public class ClassGeneratorUtil implements Constants {
 	 * normally does not allow).
 	 */
 	// Maybe combine this with generateMethod()
-	private static void generateSuperDelegateMethod(
-		String superClassName, String methodName, String returnType,
-		String[] paramTypes, int modifiers, ClassWriter cw )
-	{
+	private static void generateSuperDelegateMethod(String superClassName, String methodName, String returnType, String[] paramTypes, int modifiers, ClassWriter cw) {
 		String[] exceptions = null;
 
 		if (returnType == null) // map loose return to Object
@@ -684,7 +602,7 @@ public class ClassGeneratorUtil implements Constants {
 	}
 
 
-	static boolean classContainsMethod(Class clas, String methodName, String[] paramTypes) {
+	boolean classContainsMethod(Class clas, String methodName, String[] paramTypes) {
 		while (clas != null) {
 			Method[] methods = clas.getDeclaredMethods();
 			for (Method method : methods) {
@@ -844,8 +762,6 @@ public class ClassGeneratorUtil implements Constants {
 
 
 	/**
-	 * This method is called by the **generated class** during construction.
-	 *
 	 * Evaluate the arguments (if any) for the constructor specified by
 	 * the constructor index.  Return the ConstructorArgs object which
 	 * contains the actual arguments to the alternate constructor and also the
@@ -857,20 +773,11 @@ public class ClassGeneratorUtil implements Constants {
 	 *         and evaluated arguments for the alternate constructor
 	 */
 	public static ConstructorArgs getConstructorArgs(String superClassName, This classStaticThis, Object[] consArgs, int index) {
-		if ( classStaticThis == null )
-			throw new InterpreterError( "Unititialized class: no static" );
-
 		DelayedEvalBshMethod[] constructors;
 		try {
-			Object cons =
-				classStaticThis.getNameSpace().getVariable( BSHCONSTRUCTORS );
-			if ( cons == Primitive.VOID )
-				throw new InterpreterError(
-					"Unable to find constructors array in class" );
-			constructors = (DelayedEvalBshMethod [])cons;
-		} catch ( Exception e ) {
-			throw new InterpreterError(
-				"Unable to get instance initializers: "+e );
+			constructors = (DelayedEvalBshMethod[]) classStaticThis.getNameSpace().getVariable(BSHCONSTRUCTORS);
+		} catch (Exception e) {
+			throw new InterpreterError("unable to get instance initializer: " + e);
 		}
 
 		if (index == DEFAULTCONSTRUCTOR) // auto-gen default constructor
@@ -993,15 +900,11 @@ public class ClassGeneratorUtil implements Constants {
 
 
 	/**
-		This method is called from the **generated class** constructor to
-		evaluate the instance initializer (instance blocks and loosely typed
-	 	statements) and then the scripted constructor,
-		in the instance namespace.  These activities happen in the bsh script
-	 	but have side effects in the generated stub class (imported instance
-	 	and static variables may be initialized).
-	*/
-	// TODO: Refactor this method... too long and ungainly.
-	// Why both instance and className here?  There must have been a reason.
+	 * Initialize an instance of the class.
+	 * This method is called from the generated class constructor to evaluate
+	 * the instance initializer and scripted constructor in the instance
+	 * namespace.
+	 */
 	public static void initInstance(GeneratedClass instance, String className, Object[] args) {
 		Class[] sig = Types.getTypes(args);
 		CallStack callstack = new CallStack();
@@ -1020,10 +923,6 @@ public class ClassGeneratorUtil implements Constants {
 
 			// Get the static This reference from the proto-instance
 			This classStaticThis = getClassStaticThis(instance.getClass(), className);
-
-			if ( classStaticThis == null )
-				throw new InterpreterError("Failed to init class: "+className);
-
 			interpreter = CONTEXT_INTERPRETER.get();
 			if (interpreter == null) {
 				interpreter = classStaticThis.declaringInterpreter;
@@ -1085,10 +984,6 @@ public class ClassGeneratorUtil implements Constants {
 			// Find the constructor (now in the instance namespace)
 			BshMethod constructor = instanceNameSpace.getMethod(constructorName, sig, true/*declaredOnly*/);
 
-			// differentiate a constructor from a badly named method
-			if ( constructor != null  && constructor.getReturnType() != null  )
-				constructor = null;
-
 			// if args, we must have constructor
 			if (args.length > 0 && constructor == null) {
 				throw new InterpreterError("Can't find constructor: " + className);
@@ -1105,22 +1000,8 @@ public class ClassGeneratorUtil implements Constants {
 			if (e instanceof InvocationTargetException) {
 				e = (Exception) ((InvocationTargetException) e).getTargetException();
 			}
-			throw new InterpreterError("Error in class initialization: " + e, e);
+			throw new InterpreterError("Error in class initialization.", e);
 		}
-	}
-
-	/**
-		The class is "cold" (detached with no live interpreter static
-		This reference) try to start a new interpreter and source the
-		script backing it.
-
-	 	We pass in both the fq class name and the static This ref here just
-	 	to minimize the generated code.  All we really do here is a simple
-	 	if condition for now.
-	*/
-	public static void initStatic( Class genClass )
-	{
-		startInterpreterForClass( genClass );
 	}
 
 
@@ -1183,9 +1064,6 @@ public class ClassGeneratorUtil implements Constants {
 		return s.substring(1, s.length() - 1);
 	}
 
-	/**
-	 * This should live in utilities somewhere.
-	 */
 
 	private static String getBaseName(String className) {
 		int i = className.indexOf("$");
@@ -1280,50 +1158,5 @@ public class ClassGeneratorUtil implements Constants {
 		}
 	}
 
-	/**
-		Attempt to load a script named for the class: e.g. Foo.class Foo.bsh.
-		The script is expected to (at minimum) initialize the class body.
-		That is, it should contain the scripted class definition.
-
-		This method relies on the fact that the ClassGenerator generateClass()
-		method will detect that the generated class already exists and 
-		initialize it rather than recreating it.
-
-	 	The only interact that this method has with the process is to initially
-	 	cache the correct class in the class manager for the interpreter to
-	 	insure that it is found and associated with the scripted body.
-	*/
-	public static void startInterpreterForClass( Class genClass )
-	{
-		String fqClassName = genClass.getName();
-		String baseName = Name.suffix( fqClassName, 1 );
-		String resName = baseName+".bsh";
-
-		InputStream in =  genClass.getResourceAsStream( resName );
-		if ( in == null )
-			throw new InterpreterError(
-				"Script (" + resName + ") for BeanShell generated class: "
-				+genClass+ " not found." );
-
-		Reader reader = new InputStreamReader(
-			genClass.getResourceAsStream( resName ) );
-
-		// Set up the interpreter
-		Interpreter bsh = new Interpreter();
-		NameSpace globalNS = bsh.getNameSpace();
-		globalNS.setName( "class_"+baseName+"_global");
-		globalNS.getClassManager().associateClass( genClass );
-
-		// Source the script
-		try {
-			bsh.eval( reader, bsh.getNameSpace(), resName );
-		} catch ( TargetError e ) {
-			System.out.println("Script threw exception: "+e);
-			if ( e.inNativeCode() )
-				e.printStackTrace( System.err );
-		} catch ( EvalError e ) {
-			System.out.println("Evaluation Error: "+e);
-		}
-	}
 
 }

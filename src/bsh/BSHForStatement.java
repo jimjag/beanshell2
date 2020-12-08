@@ -32,7 +32,6 @@
  *****************************************************************************/
 
 
-
 package bsh;
 
 /**
@@ -78,7 +77,7 @@ class BSHForStatement extends SimpleNode implements ParserConstants
 
 			2) We do *not* call the body block eval with the namespace 
 			override.  Instead we allow it to create a second subordinate 
-			BlockNameSpace child of the forNameSpace.  Variable propagation 
+			BlockNameSpace child of the forNameSpace.  Variable propogation 
 			still works through the chain, but the block's child cleans the 
 			state between iteration.  
 			(which is correct Java behavior... see forscope4.bsh)

@@ -32,7 +32,6 @@
  *****************************************************************************/
 
 
-
 package bsh;
 
 class BSHAssignment extends SimpleNode implements ParserConstants

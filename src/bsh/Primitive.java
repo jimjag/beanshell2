@@ -121,9 +121,6 @@ public final class Primitive implements ParserConstants, java.io.Serializable
     */
     public static final Primitive NULL = new Primitive(Special.NULL_VALUE);
 
-	public static Primitive TRUE = new Primitive(true);	
-	public static Primitive FALSE = new Primitive(false);
-
     /**
         VOID means "no type".
         Strictly speaking, this makes no sense here.  But for practical
@@ -158,12 +155,12 @@ public final class Primitive implements ParserConstants, java.io.Serializable
 			&& value != Special.VOID_TYPE &&
 			!isWrapperType( value.getClass() ) 
 		)
-            throw new InterpreterError( "Not a wrapper type: "+value.getClass());
+            throw new InterpreterError( "Not a wrapper type: "+value);
 
         this.value = value;
     }
 
-    public Primitive(boolean value) { this(value ? Boolean.TRUE : Boolean.FALSE); }
+    public Primitive(boolean value) { this(new Boolean(value)); }
     public Primitive(byte value) { this(new Byte(value)); }
     public Primitive(short value) { this(new Short(value)); }
     public Primitive(char value) { this(new Character(value)); }
@@ -258,14 +255,12 @@ public final class Primitive implements ParserConstants, java.io.Serializable
 			throw new UtilTargetError( "Arithemetic Exception in binary op", e);
 		}
 
-		
-		if(result instanceof Boolean)
-			return ((Boolean)result).booleanValue() ? Primitive.TRUE :
-				Primitive.FALSE;
 		// If both original args were Primitives return a Primitive result
 		// else it was mixed (wrapper/primitive) return the wrapper type
 		// Exception is for boolean result, return the primitive
-		else if ((lhsOrgType == Primitive.class && rhsOrgType == Primitive.class))
+		if ( (lhsOrgType == Primitive.class && rhsOrgType == Primitive.class)
+			|| result instanceof Boolean
+		)
 			return new Primitive( result );
 		else
 			return result;
@@ -330,25 +325,25 @@ public final class Primitive implements ParserConstants, java.io.Serializable
             // boolean
             case LT:
             case LTX:
-                return lhs < rhs ? Boolean.TRUE : Boolean.FALSE;
+                return new Boolean(lhs < rhs);
 
             case GT:
             case GTX:
-                return lhs > rhs ? Boolean.TRUE : Boolean.FALSE;
+                return new Boolean(lhs > rhs);
 
             case EQ:
-                return lhs == rhs ? Boolean.TRUE : Boolean.FALSE;
+                return new Boolean(lhs == rhs);
 
             case LE:
             case LEX:
-                return lhs <= rhs ? Boolean.TRUE : Boolean.FALSE;
+                return new Boolean(lhs <= rhs);
 
             case GE:
             case GEX:
-                return lhs >= rhs ? Boolean.TRUE : Boolean.FALSE;
+                return new Boolean(lhs >= rhs);
 
             case NE:
-                return lhs != rhs ? Boolean.TRUE : Boolean.FALSE;
+                return new Boolean(lhs != rhs);
 
             // arithmetic
             case PLUS:
@@ -407,25 +402,25 @@ public final class Primitive implements ParserConstants, java.io.Serializable
             // boolean
             case LT:
             case LTX:
-                return lhs < rhs ? Boolean.TRUE : Boolean.FALSE;
+                return new Boolean(lhs < rhs);
 
             case GT:
             case GTX:
-                return lhs > rhs ? Boolean.TRUE : Boolean.FALSE;
+                return new Boolean(lhs > rhs);
 
             case EQ:
-                return lhs == rhs ? Boolean.TRUE : Boolean.FALSE;
+                return new Boolean(lhs == rhs);
 
             case LE:
             case LEX:
-                return lhs <= rhs ? Boolean.TRUE : Boolean.FALSE;
+                return new Boolean(lhs <= rhs);
 
             case GE:
             case GEX:
-                return lhs >= rhs ? Boolean.TRUE : Boolean.FALSE;
+                return new Boolean(lhs >= rhs);
 
             case NE:
-                return lhs != rhs ? Boolean.TRUE : Boolean.FALSE;
+                return new Boolean(lhs != rhs);
 
             // arithmetic
             case PLUS:
@@ -485,25 +480,25 @@ public final class Primitive implements ParserConstants, java.io.Serializable
             // boolean
             case LT:
             case LTX:
-                return lhs < rhs ? Boolean.TRUE : Boolean.FALSE;
+                return new Boolean(lhs < rhs);
 
             case GT:
             case GTX:
-                return lhs > rhs ? Boolean.TRUE : Boolean.FALSE;
+                return new Boolean(lhs > rhs);
 
             case EQ:
-                return lhs == rhs ? Boolean.TRUE : Boolean.FALSE;
+                return new Boolean(lhs == rhs);
 
             case LE:
             case LEX:
-                return lhs <= rhs ? Boolean.TRUE : Boolean.FALSE;
+                return new Boolean(lhs <= rhs);
 
             case GE:
             case GEX:
-                return lhs >= rhs ? Boolean.TRUE : Boolean.FALSE;
+                return new Boolean(lhs >= rhs);
 
             case NE:
-                return lhs != rhs ? Boolean.TRUE : Boolean.FALSE;
+                return new Boolean(lhs != rhs);
 
             // arithmetic
             case PLUS:
@@ -547,25 +542,25 @@ public final class Primitive implements ParserConstants, java.io.Serializable
             // boolean
             case LT:
             case LTX:
-                return lhs < rhs ? Boolean.TRUE : Boolean.FALSE;
+                return new Boolean(lhs < rhs);
 
             case GT:
             case GTX:
-                return lhs > rhs ? Boolean.TRUE : Boolean.FALSE;
+                return new Boolean(lhs > rhs);
 
             case EQ:
-                return lhs == rhs ? Boolean.TRUE : Boolean.FALSE;
+                return new Boolean(lhs == rhs);
 
             case LE:
             case LEX:
-                return lhs <= rhs ? Boolean.TRUE : Boolean.FALSE;
+                return new Boolean(lhs <= rhs);
 
             case GE:
             case GEX:
-                return lhs >= rhs ? Boolean.TRUE : Boolean.FALSE;
+                return new Boolean(lhs >= rhs);
 
             case NE:
-                return lhs != rhs ? Boolean.TRUE : Boolean.FALSE;
+                return new Boolean(lhs != rhs);
 
             // arithmetic
             case PLUS:
@@ -667,8 +662,7 @@ public final class Primitive implements ParserConstants, java.io.Serializable
         Object operand = promoteToInteger(val.getValue());
 
         if ( operand instanceof Boolean )
-            return booleanUnaryOperation((Boolean)operand, kind)
-            	? Primitive.TRUE : Primitive.FALSE;
+            return new Primitive(booleanUnaryOperation((Boolean)operand, kind));
         else if(operand instanceof Integer)
         {
             int result = intUnaryOperation((Integer)operand, kind);
@@ -914,11 +908,7 @@ public final class Primitive implements ParserConstants, java.io.Serializable
         if ( value == null )
             return Primitive.NULL;
 
-        if(value instanceof Boolean)
-        	return ((Boolean)value).booleanValue() ? Primitive.TRUE :
-        		Primitive.FALSE;
-        
-		if ( type.isPrimitive() && isWrapperType( value.getClass() ) )
+		if ( type.isPrimitive() )
 			return new Primitive( value );
 
 		return value;
@@ -933,7 +923,7 @@ public final class Primitive implements ParserConstants, java.io.Serializable
 		if ( type == null || !type.isPrimitive() )
 			return Primitive.NULL;
 		if ( type == Boolean.TYPE )
-			return Primitive.FALSE;
+			return new Primitive( false );
 
 		// non boolean primitive, get appropriate flavor of zero
 		try {

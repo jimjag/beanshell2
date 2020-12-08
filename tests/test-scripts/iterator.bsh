@@ -3,7 +3,6 @@
 source("TestHarness.bsh");
 
 import bsh.CollectionManager;
-import bsh.Capabilities;
 cm = CollectionManager.getCollectionManager();
 
 iterator = cm.getBshIterator( "ffoo" );

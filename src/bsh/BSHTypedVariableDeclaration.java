@@ -31,7 +31,6 @@
  *                                                                           *
  *****************************************************************************/
 
-
 package bsh;
 
 class BSHTypedVariableDeclaration extends SimpleNode
