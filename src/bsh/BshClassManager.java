@@ -323,6 +323,30 @@ public class BshClassManager
 	}
 
 	/**
+	 * Associate a persistent generated class implementation with this
+	 * interpreter.  An associated class will be used in lieu of generating
+	 * bytecode when a scripted class of the same name is encountered.
+	 * When such a class is defined in the script it will cause the associated
+	 * existing class implementation to be initialized (with the static
+	 * initializer field).  This is utilized by the persistent class generator
+	 * to allow a generated class to bootstrap an interpreter and rendesvous
+	 * with its implementation script.
+	 *
+	 * Class associations currently last for the life of the class manager.
+	 */
+	public void associateClass( Class clas )
+	{
+		// TODO should check to make sure it's a generated class here
+		// just need to add a method to classgenerator API to test it
+		associatedClasses.put( clas.getName(), clas );
+	}
+
+	public Class getAssociatedClass( String name )
+	{
+		return (Class)associatedClasses.get( name );
+	}
+
+	/**
 		Cache a resolved (possibly overloaded) method based on the 
 		argument types used to invoke it, subject to classloader change.
 		Static and Object methods are cached separately to support fast lookup
@@ -515,19 +539,19 @@ public class BshClassManager
 		int i = baseName.indexOf("$");
 		if ( i != -1 )
 			baseName = baseName.substring(i+1);
-		String cur = definingClassesBaseNames.get( baseName );
+		String cur = (String)definingClassesBaseNames.get( baseName );
 		if ( cur != null )
 			throw new InterpreterError("Defining class problem: "+className 
 				+": BeanShell cannot yet simultaneously define two or more "
 				+"dependent classes of the same name.  Attempt to define: "
 				+ className +" while defining: "+cur 
 			);
-		definingClasses.add( className );
+		definingClasses.put( className, NOVALUE );
 		definingClassesBaseNames.put( baseName, className );
 	}
 
 	protected boolean isClassBeingDefined( String className ) {
-		return definingClasses.contains( className );
+		return definingClasses.get( className ) != null;
 	}
 
 	/**

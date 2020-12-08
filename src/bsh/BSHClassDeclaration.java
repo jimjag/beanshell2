@@ -95,9 +95,13 @@ class BSHClassDeclaration extends SimpleNode
 		else
 			block = new BSHBlock( ParserTreeConstants.JJTBLOCK );
 
+		try {
 		return ClassGenerator.getClassGenerator().generateClass(
 			name, modifiers, interfaces, superClass, block, isInterface,
 			callstack, interpreter );
+		} catch ( UtilEvalError e ) {
+			throw e.toEvalError( this, callstack );
+		}
 	}
 
 

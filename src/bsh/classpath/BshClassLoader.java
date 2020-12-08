@@ -113,12 +113,17 @@ public class BshClassLoader extends URLClassLoader
 
 		/*
 			Try to find the class using our classloading mechanism.
+			Note: I wish we didn't have to catch the exception here... slow
 		*/
+		try {
 		c = findClass( name );
+		} catch ( ClassNotFoundException e ) { }
 
-		if ( resolve ) {
+		if ( c == null )
+			throw new ClassNotFoundException("here in loaClass");
+
+		if ( resolve )
 			resolveClass( c );
-		}
 
 		return c;
 	}
