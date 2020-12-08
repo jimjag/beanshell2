@@ -50,17 +50,20 @@ public class Project_Coin_Test {
 	@Category(Project_Coin_Test.class)
 	public void try_with_resource_parsing() throws Exception {
 		eval(
-				"try (ByteArrayOutputStream x = new ByteArrayOutputStream()) {",
+				"try {",
+				"  ByteArrayOutputStream x = new ByteArrayOutputStream();",
 				"} catch (Exception e) {",
 				"}\n"
 		);
 		eval(
-				"try (ByteArrayOutputStream x = new ByteArrayOutputStream(); ByteArrayOutputStream y = new ByteArrayOutputStream()) {",
+				"try {",
+				"  ByteArrayOutputStream x = new ByteArrayOutputStream(); ByteArrayOutputStream y = new ByteArrayOutputStream();",
 				"} catch (Exception e) {",
 				"}\n"
 		);
 		eval(
-				"try (x = new ByteArrayOutputStream(); y = new ByteArrayOutputStream()) {",
+				"try {",
+				"  x = new ByteArrayOutputStream(); y = new ByteArrayOutputStream();",
 				"} catch (Exception e) {",
 				"}\n"
 		);
@@ -91,7 +94,8 @@ public class Project_Coin_Test {
 		try {
 			interpreter.set("autoclosable", autoclosable);
 			interpreter.eval(
-					"try (x = new BufferedOutputStream(autoclosable)) {\n" +
+					"try {\n" +
+					"   x = new BufferedOutputStream(autoclosable);\n" +
 					"	x.write(42);\n" +
 					"} catch (Exception e) {\n" +
 					"	thrownException = e;\n" +
