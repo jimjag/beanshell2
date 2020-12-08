@@ -480,8 +480,8 @@ final class Reflect {
 		return method;
 	}
 
-	/*
-			 Climb the class and interface inheritence graph of the type and collect
+	/**
+			Climb the class and interface inheritance graph of the type and collect
 			 all methods matching the specified name and criterion.  If publicOnly
 			 is true then only public methods in *public* classes or interfaces will
 			 be returned.  In the normal (non-accessible) case this addresses the

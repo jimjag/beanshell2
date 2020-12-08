@@ -93,7 +93,7 @@ public class ClassGeneratorUtil implements Constants {
 	 * The name of the instance field holding the reference to the bsh
 	 * instance This (the callback namespace for instance methods)
 	 */
-	private static final String BSHTHIS = "_bshThis";
+	static final String BSHTHIS = "_bshThis";
 
 	/**
 	 * The prefix for the name of the super delegate methods. e.g.
@@ -109,30 +109,30 @@ public class ClassGeneratorUtil implements Constants {
 	/**
 	 * The bsh static namespace variable that holds the constructor methods
 	 */
-	private static final String BSHCONSTRUCTORS = "_bshConstructors";
+	static final String BSHCONSTRUCTORS = "_bshConstructors";
 
 	/**
 	 * The switch branch number for the default constructor.
 	 * The value -1 will cause the default branch to be taken.
 	 */
-	private static final int DEFAULTCONSTRUCTOR = -1;
+	static final int DEFAULTCONSTRUCTOR = -1;
 
-	private static final String OBJECT = "Ljava/lang/Object;";
+	static final String OBJECT = "Ljava/lang/Object;";
 
-	private final String className;
+	private String className;
 	/**
 	 * fully qualified class name (with package) e.g. foo/bar/Blah
 	 */
-	private final String fqClassName;
-	private final Class superClass;
-	private final String superClassName;
-	private final Class[] interfaces;
-	private final Variable[] vars;
-	private final Constructor[] superConstructors;
-	private final DelayedEvalBshMethod[] constructors;
-	private final DelayedEvalBshMethod[] methods;
-	private final NameSpace classStaticNameSpace;
-	private final Modifiers classModifiers;
+	private String fqClassName;
+	private Class superClass;
+	private String superClassName;
+	private Class[] interfaces;
+	private Variable[] vars;
+	private Constructor[] superConstructors;
+	private DelayedEvalBshMethod[] constructors;
+	private DelayedEvalBshMethod[] methods;
+	private NameSpace classStaticNameSpace;
+	private Modifiers classModifiers;
 	private boolean isInterface;
 
 
