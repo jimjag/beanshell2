@@ -378,6 +378,7 @@
 	<!-- Jar targets -->
 
 	<target name="jarcore" depends="compile,_distdir">
+	<!--
         <fail message="Please use ant 1.8">
             <condition>
                 <not>
@@ -385,6 +386,7 @@
                 </not>
             </condition>
         </fail>
+    -->
     <delete file="${core-jar}"/>
 		<jar jarfile="${core-jar}">
 			<manifest>
