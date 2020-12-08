@@ -14,6 +14,7 @@ import static junit.framework.Assert.fail;
 @RunWith(FilteredTestRunner.class)
 public class Issue_55_Test {
 
+	/*
 	@Category( NotSuitedFor_Java5_OrLower.class )
 	@Test
 	public void check_BshScriptEngineFactory() throws Exception {
@@ -22,7 +23,7 @@ public class Issue_55_Test {
 		final Object scriptEngineResult = new BshScriptEngineFactory().getScriptEngine().eval(script);
 		assertEquals(interpreterResult, scriptEngineResult);
 	}
-
+	*/
 
 	@Test
 	public void check_ExternalNameSpace() throws Exception {
