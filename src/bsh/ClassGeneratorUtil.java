@@ -131,7 +131,7 @@ public class ClassGeneratorUtil implements Constants {
 	private final Constructor[] superConstructors;
 	private final DelayedEvalBshMethod[] constructors;
 	private final DelayedEvalBshMethod[] methods;
-	// private final NameSpace classStaticNameSpace;
+	private final NameSpace classStaticNameSpace;
 	private final Modifiers classModifiers;
 	private boolean isInterface;
 
@@ -142,7 +142,7 @@ public class ClassGeneratorUtil implements Constants {
 	public ClassGeneratorUtil(
 		Modifiers classModifiers, String className, String packageName,
 		Class superClass, Class [] interfaces, Variable [] vars,
-		DelayedEvalBshMethod [] bshmethods, boolean isInterface
+		DelayedEvalBshMethod [] bshmethods, NameSpace classStaticNameSpace, boolean isInterface
 	)
 	{
 		this.classModifiers = classModifiers;
@@ -162,7 +162,7 @@ public class ClassGeneratorUtil implements Constants {
 		}
 		this.interfaces = interfaces;
 		this.vars = vars;
-		// this.classStaticNameSpace = classStaticNameSpace;
+		this.classStaticNameSpace = classStaticNameSpace;
 		this.superConstructors = superClass.getDeclaredConstructors();
 		this.isInterface = isInterface;
 
@@ -220,6 +220,7 @@ public class ClassGeneratorUtil implements Constants {
 	 * Generate the class bytecode for this class.
 	 */
 	public byte [] generateClass( boolean generateInitCode )
+	{
 		// Force the class public for now...
 		int classMods = getASMModifiers(classModifiers) | ACC_PUBLIC;
 		if (isInterface) {

@@ -419,8 +419,7 @@ public class NameSpace implements Serializable, BshClassManager.Listener, NameSo
 		String name, Object value, boolean strictJava, boolean recurse ) 
 		throws UtilEvalError 
 	{
-		if ( variables == null )
-			variables =	new Hashtable();
+		ensureVariables();
 
 		// primitives should have been wrapped
 		if ( value == null )
