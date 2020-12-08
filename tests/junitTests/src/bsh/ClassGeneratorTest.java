@@ -74,7 +74,7 @@ public class ClassGeneratorTest {
 
 	/**
 	 * See also failing test script "classinterf1.bsh" and
-	 * <a href="http://code.google.com/p/beanshell2/issues/detail?id=46">issue #46</a>.
+	 * <a href="https://github.com/jimjag/beanshell2/issues/detail?id=46">issue #46</a>.
 	 */
 	@Test
 	@Category(KnownIssue.class)

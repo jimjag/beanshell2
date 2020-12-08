@@ -6,7 +6,7 @@ import org.junit.runner.RunWith;
 
 
 /**
- * See <a href="http://code.google.com/p/beanshell2/issues/detail?id=24">issue 24</a>.
+ * See <a href="https://github.com/jimjag/beanshell2/issues/detail?id=24">issue 24</a>.
  */
 @RunWith(FilteredTestRunner.class)
 public class AnnotationsParsing {

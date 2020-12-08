@@ -452,7 +452,7 @@ public class Interpreter
 				eval("printBanner();"); 
 			} catch ( EvalError e ) {
 				println(
-					"BeanShell2 " + VERSION + " - http://code.google.com/p/beanshell2");
+					"BeanShell2 " + VERSION + " - https://github.com/jimjag/beanshell2");
 			}
 
 		// init the callstack.  

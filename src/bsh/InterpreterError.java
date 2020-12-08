@@ -30,7 +30,7 @@
  *  http://www.pat.net/~pat/                                                 *
  *                                                                           *
  *****************************************************************************/
-// part of beanshell fork at http://code.google.com/p/beanshell2
+// part of beanshell fork at https://github.com/jimjag/beanshell2
 // licensed unter GNU Lesser GPL, see http://www.gnu.org/licenses/lgpl.html
 package bsh;
 
