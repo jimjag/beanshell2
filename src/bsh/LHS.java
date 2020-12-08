@@ -32,6 +32,7 @@
  *****************************************************************************/
 
 
+
 package bsh;
 
 import java.lang.reflect.Field;
@@ -74,9 +75,9 @@ class LHS implements ParserConstants, java.io.Serializable
 	Object object;
 	int index;
 
-/**
+    /**
 		Variable LHS constructor.
-*/
+    */
 	LHS( NameSpace nameSpace, String varName )
 	{
 throw new Error("namespace lhs");
@@ -154,7 +155,8 @@ throw new Error("namespace lhs");
 	public Object getValue() throws UtilEvalError
 	{
 		if ( type == VARIABLE )
-			return nameSpace.getVariable( varName );
+			return nameSpace.getVariableOrProperty( varName, null );
+			// return nameSpace.getVariable( varName );
 
 		if (type == FIELD)
 			try {
@@ -165,13 +167,20 @@ throw new Error("namespace lhs");
 			}
 
 		if ( type == PROPERTY )
+		{
+			// return the raw type here... we don't know what it's supposed
+			// to be...
+			CollectionManager cm = CollectionManager.getCollectionManager();
+			if ( cm.isMap( object ) )
+				return cm.getFromMap( object/*map*/, propName );
+			else
 			try {
 				return Reflect.getObjectProperty(object, propName);
-			}
-			catch(ReflectError e) {
+				} catch(ReflectError e) {
 				Interpreter.debug(e.getMessage());
 				throw new UtilEvalError("No such property: " + propName);
 			}
+		}
 
 		if ( type == INDEX )
 			try {
@@ -194,19 +203,16 @@ throw new Error("namespace lhs");
 		{
 			// Set the variable in namespace according to localVar flag
 			if ( localVar )
-				nameSpace.setLocalVariable( varName, val, strictJava );
+				nameSpace.setLocalVariableOrProperty( varName, val, strictJava );
 			else
-				nameSpace.setVariable( varName, val, strictJava );
+				nameSpace.setVariableOrProperty( varName, val, strictJava );
 		} else 
 		if ( type == FIELD )
 		{
 			try {
-				Object fieldVal = val instanceof Primitive ?  
-					((Primitive)val).getValue() : val;
-
 				// This should probably be in Reflect.java
 				Reflect.setAccessible(field);
-				field.set( object, fieldVal );
+				field.set( object, Primitive.unwrap(val));
 				return val;
 			}
 			catch( NullPointerException e) {   
@@ -230,13 +236,9 @@ throw new Error("namespace lhs");
 		else 
 		if ( type == PROPERTY )
 		{
-			/*
-			if ( object instanceof Hashtable )
-				((Hashtable)object).put(propName, val);
-			*/
 			CollectionManager cm = CollectionManager.getCollectionManager();
 			if ( cm.isMap( object ) )
-				cm.putInMap( object/*map*/, propName, val );
+				cm.putInMap( object/*map*/, propName, Primitive.unwrap(val) );
 			else
 				try {
 					Reflect.setObjectProperty(object, propName, val);

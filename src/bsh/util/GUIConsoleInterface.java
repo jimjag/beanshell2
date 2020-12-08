@@ -31,6 +31,7 @@
  *                                                                           *
  *****************************************************************************/
 
+
 package bsh.util;
 
 import bsh.ConsoleInterface;
@@ -38,7 +39,7 @@ import java.awt.Color;
 
 /**
 	Additional capabilities of an interactive console for BeanShell.
-	Althought this is called "GUIConsoleInterface" it might just as well be 
+	Although this is called "GUIConsoleInterface" it might just as well be 
 	used by a more sophisticated text-only command line.
 	<p>
 	Note: we may want to express the command line history, editing, 

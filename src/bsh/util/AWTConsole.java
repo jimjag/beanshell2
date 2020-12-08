@@ -32,6 +32,7 @@
  *****************************************************************************/
 
 
+
 package bsh.util;
 
 import java.awt.*;
@@ -324,7 +325,7 @@ public class AWTConsole extends TextArea
 		final Frame f = new Frame("Bsh Console");
 		f.add(console, "Center");
 		f.pack();
-        f.setVisible(true);
+		f.setVisible(true);
 		f.addWindowListener( new WindowAdapter() {
 			public void windowClosing( WindowEvent e ) {
 				f.dispose();

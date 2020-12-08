@@ -32,6 +32,7 @@
  *****************************************************************************/
 
 
+
 package bsh;
 
 class BSHImportDeclaration extends SimpleNode

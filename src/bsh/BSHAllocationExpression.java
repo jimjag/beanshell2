@@ -32,6 +32,7 @@
  *****************************************************************************/
 
 
+
 package bsh;
 
 import java.lang.reflect.Array;
@@ -166,16 +167,24 @@ class BSHAllocationExpression extends SimpleNode
 		return obj;
 	}
 
+	// TODO
+	/*
+		This is totally broken...
+		need to construct a real inner class block here...
+	*/
 	private Object constructWithClassBody( 
 		Class type, Object[] args, BSHBlock block,
 		CallStack callstack, Interpreter interpreter ) 
 		throws EvalError
 	{
+		//throw new InterpreterError("constructWithClassBody unimplemented");
+
 		String name = callstack.top().getName() + "$" + (++innerClassCount);
 		Modifiers modifiers = new Modifiers();
 		modifiers.addModifier( Modifiers.CLASS, "public" );
 		Class clas = ClassGenerator.getClassGenerator() .generateClass( 
 				name, modifiers, null/*interfaces*/, type/*superClass*/, 
+// block is not innerClassBlock here!!!
 				block, false/*isInterface*/, callstack, interpreter );
 		try {
 			return Reflect.constructObject( clas, args );

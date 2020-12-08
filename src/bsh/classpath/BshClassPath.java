@@ -31,6 +31,7 @@
  *                                                                           *
  *****************************************************************************/
 
+
 package bsh.classpath;
 
 import java.util.*;
@@ -590,7 +591,7 @@ public class BshClassPath
 				// Java deals with relative paths for it's bootstrap loader
 				// but JARClassLoader doesn't.
 				urls[i] = new File( 
-					new File(paths[i]).getCanonicalPath() ).toURL();
+					new File(paths[i]).getCanonicalPath() ).toURI().toURL();
 		} catch ( IOException e ) {
 			throw new ClassPathException("can't parse class path: "+e);
 		}
@@ -662,7 +663,7 @@ public class BshClassPath
 			{
 				//String rtjar = System.getProperty("java.home")+"/lib/rt.jar";
 				String rtjar = getRTJarPath();
-				URL url = new File( rtjar ).toURL();
+				URL url = new File( rtjar ).toURI().toURL();
 				bootClassPath = new BshClassPath( 
 					"Boot Class Path", new URL[] { url } );
 			} catch ( MalformedURLException e ) {
@@ -754,7 +755,7 @@ public class BshClassPath
 	public static void main( String [] args ) throws Exception {
 		URL [] urls = new URL [ args.length ];
 		for(int i=0; i< args.length; i++)
-			urls[i] =  new File(args[i]).toURL();
+			urls[i] =  new File(args[i]).toURI().toURL();
 		BshClassPath bcp = new BshClassPath( "Test", urls );
 	}
 

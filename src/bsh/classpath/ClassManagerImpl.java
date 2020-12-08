@@ -31,6 +31,7 @@
  *                                                                           *
  *****************************************************************************/
 
+
 package bsh.classpath;
 
 import java.net.*;
@@ -69,7 +70,7 @@ import bsh.UtilEvalError;
 
 	Note on jdk1.2 dependency:
 
-	We are forced to use weak references here to accomodate all of the 
+	We are forced to use weak references here to accommodate all of the 
 	fleeting namespace listeners.  (NameSpaces must be informed if the class 
 	space changes so that they can un-cache names).  I had the interesting 
 	thought that a way around this would be to implement BeanShell's own 
@@ -245,7 +246,7 @@ public class ClassManagerImpl extends BshClassManager
 */
 			}
 
-		// Try scripted class
+		// Try .java source file
 		if ( c == null )
 			c = loadSourceClass( name );
 
@@ -380,7 +381,8 @@ public class ClassManagerImpl extends BshClassManager
 		DiscreteFilesClassLoader.ClassSourceMap map = 
 			new DiscreteFilesClassLoader.ClassSourceMap();
 
-		for (int i=0; i< classNames.length; i++) {
+		for (int i=0; i< classNames.length; i++)
+		{
 			String name = classNames[i];
 
 			// look in baseLoader class path 
@@ -559,6 +561,7 @@ public class ClassManagerImpl extends BshClassManager
 	@Override
 	public Class defineClass( String name, byte [] code )
 	{
+//System.out.println( "defineClass: "+name );
 		baseClassPath.setClassSource( name, new GeneratedClassSource( code ) );
 		try {
 			reloadClasses( new String [] { name } );

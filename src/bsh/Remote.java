@@ -31,6 +31,7 @@
  *                                                                           *
  *****************************************************************************/
 
+
 package bsh;
 
 import java.io.*;
@@ -153,7 +154,7 @@ public class Remote
 		/*
 		// This requires Java 1.3
 		try {
-			sb.append( URLEncoder.encode( text, "8859_1" ) );
+			sb.append( URLEncoder.encode( text, "UTF-8" ) );
 		} catch ( UnsupportedEncodingException e ) {
 			e.printStackTrace();
 		}

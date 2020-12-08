@@ -32,6 +32,7 @@
  *****************************************************************************/
 
 
+
 package bsh;
 
 class BSHUnaryExpression extends SimpleNode implements ParserConstants
@@ -101,8 +102,8 @@ class BSHUnaryExpression extends SimpleNode implements ParserConstants
         Object operand = Primitive.promoteToInteger(val);
 
         if ( operand instanceof Boolean )
-			return new Boolean(
-				Primitive.booleanUnaryOperation((Boolean)operand, kind));
+			return Primitive.booleanUnaryOperation((Boolean)operand, kind)
+					? Boolean.TRUE : Boolean.FALSE;
         else 
 		if ( operand instanceof Integer )
         {

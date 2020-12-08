@@ -56,7 +56,7 @@
 
 	<!-- Uncomment to build under JDK1.1 without warnings 
 	<property name="exclude-1.1" 
-		value="bsh/JThis.java,bsh/classpath/*,bsh/util/*,bsh/reflect/*"/>
+		value="bsh/JThis.java,bsh/classpath/*,bsh/util/*,bsh/reflect/*,bsh/ExternalNameSpace.java"/>
 	-->
 
 	<!-- Uncomment to build without making the BSF adapter 
@@ -93,6 +93,8 @@
 	<property name="javadoc-zip" value="${dist-dir}/bsh-${version}-javadoc.zip"/>
 	<property name="core-jar" value="${dist-dir}/bsh-core-${version}.jar"/>
 	<property name="src-zip" value="${dist-dir}/bsh-${version}-src.zip"/>
+	<property name="src-jar" value="${dist-dir}/bsh-${version}-sources.jar"/>
+	<property name="pom" value="${dist-dir}/bsh-${version}.pom"/>
 	<property name="all-jar-name" value="bsh-${version}.jar"/>
 	<property name="all-jar" value="${dist-dir}/${all-jar-name}"/>
 	<property name="commands-jar" 
@@ -194,7 +196,8 @@
 		<!-- exclude the ${excludes} as well as anything under a "bak" dir -->
 		<!--compiler="${build-compiler}"-->
 		
-		<javac srcdir="${src-dir}:${bsf-src-dir}"
+		<javac
+		    srcdir="${src-dir}:${test-src-dir}:${bsf-src-dir}"
 			destdir="${build-dir}"
 			deprecation="${deprecation}"
 			optimize="on"
@@ -219,12 +222,18 @@
 				<!-- install the servlet stuff -->
 				<patternset refid="bshservlet-patternset"/>
 			</fileset>
+
+			<!-- install bsh commands used in tests -->
+			<fileset dir="${test-src-dir}">
+				<patternset>
+					<include name="**/*.bsh"/>
+				</patternset>
+			</fileset>
 		</copy>
 		<tstamp>
 			<format property="DATE" pattern="yyyy-MM-dd hh:mm:ss" />
 		</tstamp>
 	</target>
-
 
 	<target name="javadoc" depends="compile">
 		<mkdir dir="${javadoc-dir}" />
@@ -233,6 +242,7 @@
 			 destdir="${javadoc-dir}"
 			 author="true"
 			 version="true"
+       source="1.5"
 			 use="true"
 			 windowtitle="BeanShell2 ${version}"
 			 doctitle="&lt;h1&gt;BeanShell2 ${version}&lt;h1&gt;"
@@ -347,6 +357,7 @@
 		<patternset id="commands-bsh-patternset">
 			<include name="bsh/commands/*.bsh"/>
 			<exclude name="CVS"/>
+			<exclude name=".svn"/>
 		</patternset>
 	</fileset>
 
@@ -358,6 +369,7 @@
 		<patternset id="util-lib-patternset">
 			<include name="bsh/util/lib/*"/>
 			<exclude name="CVS"/>
+			<exclude name=".svn"/>
 		</patternset>
 	</fileset>
 
@@ -431,8 +443,23 @@
 				<exclude name="javadoc/**/*"/>
 				<!--exclude name="docs/**/*"/-->
 				<exclude name="**/CVS"/>
+				<exclude name="**/.svn"/>
 			</zipfileset>
 		</zip>
+	</target>
+	<target name="jarsrc" depends="_distdir">
+		<delete file="${src-jar}"/>
+		<zip zipfile="${src-jar}">
+			<zipfileset dir="src" prefix="">
+				<include name="**/*.java"/>
+				<exclude name="**/CVS"/>
+				<exclude name="**/.svn"/>
+			</zipfileset>
+		</zip>
+	</target>
+	<target name="pom" depends="_distdir">
+		<delete file="${pom}"/>
+		<copy file="pom.xml" tofile="${pom}" />
 	</target>
 
 	<target name="_distdir">
@@ -454,7 +481,7 @@
 	</target>
 	
 	<!-- Make all of the dist jars -->
-	<target name="dist" depends="_distdir,compile-all,jarcore,jarall,javadoc,zipsrc,bshservlet-war,bshservlet-wbsh-war,bshdoc">
+	<target name="dist" depends="_distdir,compile-all,jarcore,jarall,javadoc,zipsrc,jarsrc,pom,bshservlet-war,bshservlet-wbsh-war,bshdoc">
 
 		<antcall target="jarfileset">
 			<param name="target-jar" value="${commands-jar}"/>
@@ -494,6 +521,13 @@
 
 		<delete file="${javadoc-zip}"/>
 		<zip zipfile="${javadoc-zip}" basedir="${javadoc-dir}"/>
+                <checksum fileext=".sha1" algorithm="SHA" forceoverwrite="true">
+                   <fileset dir="${dist-dir}">
+                     <include name="*.zip" />
+                     <include name="*.jar" />
+                     <include name="*.pom" />
+                   </fileset>
+                </checksum>
 
 		<!-- Build the documentation -->
 		<!-- Don't build the documentation right now.

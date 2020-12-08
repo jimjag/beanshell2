@@ -32,11 +32,13 @@
  *****************************************************************************/
 
 
+
 package bsh;
 
 class BSHBlock extends SimpleNode
 {
 	public boolean isSynchronized = false;
+	public boolean isStatic = false;
 
 	BSHBlock(int id) { super(id); }
 
