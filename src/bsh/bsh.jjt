@@ -54,9 +54,6 @@ options {
 	DEBUG_LOOKAHEAD=true;
 	*/
 
-	// Not sure exactly what this does
-	ERROR_REPORTING=false;
-
 	/*
 		There are weird issues related to this flag.
 		The default value, true, creates line level error detail in the parse

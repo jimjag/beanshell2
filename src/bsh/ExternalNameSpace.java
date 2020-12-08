@@ -75,6 +75,16 @@ public class ExternalNameSpace extends NameSpace
 		this.externalMap = map ; 
 	}
 
+    /**
+	*/
+	void setVariable( 
+		String name, Object value, boolean strictJava, boolean recurse ) 
+		throws UtilEvalError 
+	{
+		super.setVariable( name, value, strictJava, recurse );
+		putExternalMap( name, value );
+	}
+
 	/**
 	*/
 	public void unsetVariable( String name )
@@ -211,5 +221,28 @@ public class ExternalNameSpace extends NameSpace
 		externalMap.clear();
 	}
 
+	/**
+		Place an unwrapped value in the external map.
+		BeanShell primitive types are represented by their object wrappers, so
+		it is not possible to differentiate between wrapper types and primitive
+		types via the external Map.
+	*/
+	protected void putExternalMap( String name, Object value ) 
+	{
+		if ( value instanceof Variable )
+			try {
+				value = unwrapVariable( (Variable)value );
+			} catch ( UtilEvalError ute ) {
+				// There should be no case for this.  unwrapVariable throws
+				// UtilEvalError in some cases where it holds an LHS or array
+				// index.
+				throw new InterpreterError("unexpected UtilEvalError");
+			}
+
+		if ( value instanceof Primitive )
+			value = Primitive.unwrap( (Primitive)value );
+
+		externalMap.put( name, value );
+	}
 }
 

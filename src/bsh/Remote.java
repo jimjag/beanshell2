@@ -150,12 +150,15 @@ public class Remote
 		StringBuilder sb = new StringBuilder();
 		sb.append( "bsh.client=Remote" );
 		sb.append( "&bsh.script=" );
+		sb.append( URLEncoder.encode( text ) );
+		/*
 		// This requires Java 1.3
 		try {
 			sb.append( URLEncoder.encode( text, "UTF-8" ) );
 		} catch ( UnsupportedEncodingException e ) {
 			e.printStackTrace();
 		}
+		*/
 		String formData = sb.toString(  );
 
 		try {
