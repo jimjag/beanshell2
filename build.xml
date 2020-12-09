@@ -645,7 +645,7 @@
 				destdir="${build-dir}"
 				debug="on"
 				debuglevel="lines,vars,source"
-				"1.6"
+				source="1.6"
 				target="1.6"
 				includeantruntime="false"
 			  >
