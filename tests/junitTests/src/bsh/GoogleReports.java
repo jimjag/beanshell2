@@ -14,7 +14,7 @@ import static org.junit.Assert.assertNotNull;
 public class GoogleReports {
 
 	/**
-	 * <a href="https://github.com/jimjag/beanshell2/issues/detail?id=57">issue#57</a>
+	 * <a href="https://github.com/pejobo/beanshell2/issues/detail?id=57">issue#57</a>
 	 */
 	@Test
 	@SuppressWarnings({"ConstantIfStatement"})
@@ -63,7 +63,7 @@ public class GoogleReports {
 
 
 	/**
-	 * <a href="https://github.com/jimjag/beanshell2/issues/detail?id=60">issue#60</a>
+	 * <a href="https://github.com/pejobo/beanshell2/issues/detail?id=60">issue#60</a>
 	 */
 	@Test
 	public void issue_60() throws Exception {
