@@ -280,6 +280,28 @@ public class ClassGeneratorUtil implements Constants {
 		return cw.toByteArray();
 	}
 
+	/**
+		This method provides a hook for the class generator implementation to
+	 	store additional information in the class's bsh static namespace.
+	 	Currently this is used to store an array of consructors corresponding
+	 	to the constructor switch in the generated class.
+
+	 	This method must be called to initialize the static space even if we
+		are using a previously generated class.
+	*/
+	public void initStaticNameSpace(
+		NameSpace classStaticNameSpace, BSHBlock instanceInitBlock )
+	{
+		try {
+			classStaticNameSpace.setLocalVariable(
+				BSHCONSTRUCTORS, constructors, false/*strict*/ );
+			classStaticNameSpace.setLocalVariable(
+				BSHINIT, instanceInitBlock, false/*strict*/ );
+		} catch ( UtilEvalError e ) {
+			throw new InterpreterError(
+				"Unable to init class static block: "+e );
+		}
+	}
 
 	/**
 	 * Translate bsh.Modifiers into ASM modifier bitflags.
