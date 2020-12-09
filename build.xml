@@ -171,6 +171,7 @@
 			excludes="${excludes},**/bak/**"
 			source="1.6"
 			target="1.6"
+			includeantruntime="false"
 		>
 			<classpath>
 				<fileset refid="lib-fileset"/>
@@ -206,6 +207,7 @@
 			excludes="${excludes},**/bak/**"
 			source="1.6"
 			target="1.6"
+			includeantruntime="false"
 		>
 			<classpath>
 				<fileset refid="lib-fileset"/>
@@ -242,7 +244,7 @@
 			 destdir="${javadoc-dir}"
 			 author="true"
 			 version="true"
-       source="1.5"
+			 source="1.5"
 			 use="true"
 			 windowtitle="BeanShell2 ${version}"
 			 doctitle="&lt;h1&gt;BeanShell2 ${version}&lt;h1&gt;"
@@ -645,6 +647,7 @@
 				debuglevel="lines,vars,source"
 				source="1.6"
 				target="1.6"
+				includeantruntime="false"
 			  >
 		 <classpath>
 			<path refid="test-classpath"/>
