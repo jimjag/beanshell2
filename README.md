@@ -14,8 +14,7 @@ So this is actually a fork of the Beanshell2 fork. The goal is to provide an alt
 also include the various improvements that were folded into the Beanshell2 project. Basically, the intent is to be the new home
 of Beanshell (version 2.0).
 
-There is an ongoing effort to change the licence to [Apache License, version 2.0](http://www.apache.org/licenses/LICENSE-2.0) 
-(see also pejobo issue #110), so all contributions will be dual licenced. Beanshell 2.0b6 is licensed ALv2, and all patches
-to Beanshell2 were also approved to be licensed under ALv2, so there should be no issue with that.
+This fork is licensed [Apache License, version 2.0](http://www.apache.org/licenses/LICENSE-2.0). It is based on
+Beanshell 2.0b6, which is licensed ALv2, and all patches/contributions to Beanshell2 were also under ALv2.
 
 
