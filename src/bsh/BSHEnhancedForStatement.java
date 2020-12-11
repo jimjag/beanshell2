@@ -103,11 +103,8 @@ class BSHEnhancedForStatement extends SimpleNode implements ParserConstants
             if ( statement != null ) // not empty statement
             {
                 Object ret = statement.eval( callstack, interpreter );
-
-                if (ret instanceof ReturnControl)
-                {
-                    switch(((ReturnControl)ret).kind)
-                    {
+                if (ret instanceof ReturnControl) {
+                    switch (((ReturnControl) ret).kind) {
                         case RETURN:
 							returnControl = ret;
 							breakout = true;

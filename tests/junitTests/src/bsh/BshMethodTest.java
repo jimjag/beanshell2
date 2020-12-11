@@ -51,8 +51,7 @@ public class BshMethodTest {
             new BshMethod(name, Integer.class, new String[] {}, new Class[] {},
                   null, null, null);
 
-      Assert.assertFalse("Subclasses should not be equal to super classes",
-            supInst.equals(subInst));
+        Assert.assertFalse("Subclasses should not be equal to super classes", supInst.equals(subInst));
    }
    
    /**
@@ -61,14 +60,10 @@ public class BshMethodTest {
    @Test
    public void testHashCode_contract() {
       final String name = "testMethod";
-      final BshMethod method1 = new BshMethod(name, 
-            Integer.class, new String[]{}, new Class[]{}, null, null, null);
-      final BshMethod method2 = new BshMethod(name, 
-            Integer.class, new String[]{}, new Class[]{}, null, null, null);
-      
-      Assert.assertTrue("precondition check for test failed.", 
-            method2.equals(method1));
-      Assert.assertEquals("Equal classes should have equal hashcodes",
-            method2.hashCode(), method1.hashCode());
+        final BshMethod method1 = new BshMethod(name, Integer.class, new String[]{}, new Class[]{}, null, null, null);
+        final BshMethod method2 = new BshMethod(name, Integer.class, new String[]{}, new Class[]{}, null, null, null);
+
+        Assert.assertTrue("precondition check for test failed.", method2.equals(method1));
+        Assert.assertEquals("Equal classes should have equal hashcodes", method2.hashCode(), method1.hashCode());
    }
 }

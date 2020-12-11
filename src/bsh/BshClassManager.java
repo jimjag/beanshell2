@@ -195,7 +195,7 @@ public class BshClassManager
 	
 	// Move me to classpath/ClassManagerImpl???
 	protected Class<?> loadSourceClass( final String name ) {
-		final String fileName = '/' + name.replace('.', '/') + ".java";
+		final String fileName = "/" + name.replace('.', '/') + ".java";
 		final InputStream in = getResourceAsStream( fileName );
 		if ( in == null ) {
 			return null;
