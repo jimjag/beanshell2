@@ -189,6 +189,9 @@ final class Reflect {
 
 
 	/**
+	 * Check for a field with the given name in a java object or scripted object
+	 * if the field exists fetch the value, if not check for a property value.
+	 * If neither is found return Primitive.VOID. 
 	 */
 	public static Object getObjectFieldValue(Object object, String fieldName) throws UtilEvalError, ReflectError {
 		if (object instanceof This) {

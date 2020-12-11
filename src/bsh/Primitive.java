@@ -292,23 +292,23 @@ public final class Primitive implements ParserConstants, java.io.Serializable
         switch(kind)
         {
             case EQ:
-                return new Boolean(lhs == rhs);
+                return lhs == rhs ? Boolean.TRUE : Boolean.FALSE;
 
             case NE:
-                return new Boolean(lhs != rhs);
+                return lhs != rhs ? Boolean.TRUE : Boolean.FALSE;
 
             case BOOL_OR:
             case BOOL_ORX:
             case BIT_OR:
-                return new Boolean( lhs || rhs );
+                return lhs || rhs ? Boolean.TRUE : Boolean.FALSE;
 
             case BOOL_AND:
             case BOOL_ANDX:
             case BIT_AND:
-                return new Boolean( lhs && rhs );
+                return lhs && rhs ? Boolean.TRUE : Boolean.FALSE;
 	    
             case XOR:
-                return new Boolean( lhs ^ rhs );
+                return lhs ^ rhs ? Boolean.TRUE : Boolean.FALSE;
 
             default:
                 throw new InterpreterError("unimplemented binary operator");

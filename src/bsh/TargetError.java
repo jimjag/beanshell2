@@ -54,6 +54,8 @@ public final class TargetError extends EvalError
 		String msg, Throwable t, SimpleNode node, CallStack callstack, 
 		boolean inNativeCode )
 	{
+		// super( msg, node, callstack );
+	    // initCause(t);
 		super( msg, node, callstack, t );
 		this.inNativeCode = inNativeCode;
 	}
