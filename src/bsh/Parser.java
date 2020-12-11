@@ -4888,17 +4888,17 @@ void VariableDeclaratorId() #VariableDeclaratorId :
     return false;
   }
 
-  final private boolean jj_3R_137() {
-    if (jj_scan_token(LBRACE)) return true;
-    if (jj_3R_40()) return true;
-    if (jj_scan_token(RBRACE)) return true;
-    return false;
-  }
-
   final private boolean jj_3R_132() {
     if (jj_scan_token(IMPORT)) return true;
     if (jj_scan_token(STAR)) return true;
     if (jj_scan_token(SEMICOLON)) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_137() {
+    if (jj_scan_token(LBRACE)) return true;
+    if (jj_3R_40()) return true;
+    if (jj_scan_token(RBRACE)) return true;
     return false;
   }
 

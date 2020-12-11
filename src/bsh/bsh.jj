@@ -1935,7 +1935,7 @@ void Literal()          :
 				Integer.decode( literal ).intValue() );
 		} catch ( NumberFormatException e ) {
 			throw createParseException(
-				"Error or number too big for integer type: "+ literal );
+				"Error or number too big for integer type: "+ literal, e );
 		}
   }
 |
