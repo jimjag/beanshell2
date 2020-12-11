@@ -44,7 +44,7 @@ import java.util.HashMap;
 	This holds a reference to the declaring interpreter for callbacks from
 	outside of bsh.
 */
-public final class This implements java.io.Serializable, Runnable 
+public class This implements java.io.Serializable, Runnable 
 {
 	/**
 		The namespace that this This reference wraps.
