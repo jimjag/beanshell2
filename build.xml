@@ -273,7 +273,9 @@
 	<target name="clean">
 		<delete quiet="true" dir="${build-dir}"/>
 		<delete quiet="true" dir="${javadoc-dir}"/>
+		<!--
 		<delete quiet="true" dir="${dist-dir}"/>
+		-->
 		
 		<!-- clear the junit reports: -->
 		<delete quiet="true" dir="${junit-reports}" />
