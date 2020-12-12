@@ -160,13 +160,13 @@ public final class Primitive implements ParserConstants, java.io.Serializable
     }
 
     public Primitive(boolean value) { this(value ? Boolean.TRUE : Boolean.FALSE); }
-    public Primitive(byte value) { this(new Byte(value)); }
-    public Primitive(short value) { this(new Short(value)); }
-    public Primitive(char value) { this(new Character(value)); }
-    public Primitive(int value) { this(new Integer(value)); }
-    public Primitive(long value) { this(new Long(value)); }
-    public Primitive(float value) { this(new Float(value)); }
-    public Primitive(double value) { this(new Double(value)); }
+    public Primitive(byte value) { this(Byte.valueOf(value)); }
+    public Primitive(short value) { this(Short.valueOf(value)); }
+    public Primitive(char value) { this(Character.valueOf(value)); }
+    public Primitive(int value) { this(Integer.valueOf(value)); }
+    public Primitive(long value) { this(Long.valueOf(value)); }
+    public Primitive(float value) { this(Float.valueOf(value)); }
+    public Primitive(double value) { this(Double.valueOf(value)); }
 
 	/**
     	Return the primitive value stored in its java.lang wrapper class
