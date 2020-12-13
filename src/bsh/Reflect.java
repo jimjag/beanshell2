@@ -70,8 +70,10 @@ final class Reflect {
 			try {
 				final Method method = AccessibleObject.class.getDeclaredMethod("trySetAccessible");
 				methodHandle = MethodHandles.lookup().unreflect(method);
-			} catch (NoSuchMethodException | IllegalAccessException e) {
+			} catch (IllegalAccessException e) {
 				// ignore
+			} catch (NoSuchMethodException e) {
+			    // ignore
 			}
 		}
         trySetAccessible = methodHandle;
