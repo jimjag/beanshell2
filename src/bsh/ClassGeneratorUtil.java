@@ -196,7 +196,7 @@ public class ClassGeneratorUtil implements Constants {
 		}
 
 		String sourceFile = "BeanShell Generated via ASM (www.objectweb.org)";
-		ClassWriter cw = new ClassWriter(true);
+		ClassWriter cw = new ClassWriter(false);
 		cw.visit(classMods, fqClassName, superClassName, interfaceNames, sourceFile);
 
 		if ( ! isInterface) {
