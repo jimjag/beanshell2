@@ -5,6 +5,10 @@
 	Uses Ant 1.6
 	http://www.apache.org/
 
+	Ant issues - 
+
+		- Why can't I nest filesets?  This seems like it would be so easy and
+		useful...
 -->
 <project name="BeanShell" default="compile-all" basedir=".">
 
@@ -12,14 +16,20 @@
 
 <property name="file" value=""/>
 
-    <property name="ant.build.javac.target" value="1.8" />
-    <property name="ant.build.javac.source" value="1.8" />
-	<property name="version" value="2.1.9+"/>
+    <property name="ant.build.javac.target" value="1.6" />
+    <property name="ant.build.javac.source" value="1.6" />
+	<property name="version" value="2.2.0"/>
 	<property name="deprecation" value="on"/>
 	<property name="Specification-Title" value="BeanShell" />
 	<property name="Specification-Version" value="${version}" />
 	<property name="Specification-Vendor" value="http://www.beanshell.org/" />
 	<property name="Implementation-Vendor" value="https://github.com/jimjag/beanshell2" />
+
+	<!-- choose an alternate compiler -->
+	<!-- 
+		<property name="build-compiler" value="jikes"/> 
+		<property name="build-compiler" value="modern"/> 
+	-->
 
 	<property name="src-dir" value="src" />
 	<property name="build-dir" value="classes" />
@@ -46,13 +56,13 @@
 
 	<!-- Uncomment to build under JDK1.1 without warnings 
 	<property name="exclude-1.1" 
-		value="bsh/JThis.java,bsh/classpath/*,bsh/util/*,bsh/reflect/*"/>
+		value="bsh/JThis.java,bsh/classpath/*,bsh/util/*,bsh/reflect/*,bsh/ExternalNameSpace.java"/>
 	-->
 
 	<!-- Uncomment to build without making the BSF adapter 
-	-->
 	<property name="exclude-bsf" 
 		value="bsh/util/BeanShellBSFEngine.java,TestBshBSF.java"/>
+	-->
 
 	<!-- Uncomment to build without the ASM class generator code.
 	<property name="exclude-classgen" 
@@ -77,12 +87,14 @@
 	<!--  Add up all of the excludes -->
 	<!-- how do I add strings to break this long line? -->
 	<property name="excludes" 
-		value="${exclude-bsf},${excludes-legacy}"/>
+		value="${exclude-1.2},${exclude-1.1},${exclude-bsf},${exclude-servlet},${excludes-legacy},${exclude-classgen},${excludes-arbitrary}"/>
 
 	<!-- JARs -->
 	<property name="javadoc-zip" value="${dist-dir}/bsh-${version}-javadoc.zip"/>
 	<property name="core-jar" value="${dist-dir}/bsh-core-${version}.jar"/>
 	<property name="src-zip" value="${dist-dir}/bsh-${version}-src.zip"/>
+	<property name="src-jar" value="${dist-dir}/bsh-${version}-sources.jar"/>
+	<property name="pom" value="${dist-dir}/bsh-${version}.pom"/>
 	<property name="all-jar-name" value="bsh-${version}.jar"/>
 	<property name="all-jar" value="${dist-dir}/${all-jar-name}"/>
 	<property name="commands-jar" 
@@ -157,8 +169,8 @@
 			debug="on"
 			includes="**/*.java"
 			excludes="${excludes},**/bak/**"
-			source="${ant.build.javac.source}"
-			target="${ant.build.javac.target}"
+			source="1.6"
+			target="1.6"
 		>
 			<classpath>
 				<fileset refid="lib-fileset"/>
@@ -184,15 +196,16 @@
 		<!-- exclude the ${excludes} as well as anything under a "bak" dir -->
 		<!--compiler="${build-compiler}"-->
 		
-		<javac srcdir="${src-dir}:${bsf-src-dir}"
+		<javac
+		    srcdir="${src-dir}:${test-src-dir}:${bsf-src-dir}"
 			destdir="${build-dir}"
 			deprecation="${deprecation}"
 			optimize="on"
 			debug="on"
 			includes="**/*.java"
 			excludes="${excludes},**/bak/**"
-			source="${ant.build.javac.source}"
-			target="${ant.build.javac.target}"
+			source="1.6"
+			target="1.6"
 		>
 			<classpath>
 				<fileset refid="lib-fileset"/>
@@ -205,13 +218,23 @@
 				<patternset refid="commands-bsh-patternset"/>
 				<!-- install the util/lib stuff -->
 				<patternset refid="util-lib-patternset"/>
+<!-- need to break this into a separate target to use exclude -->
+				<!-- install the servlet stuff -->
+				<patternset refid="bshservlet-patternset"/>
+			</fileset>
+
+			<!-- install bsh commands used in tests -->
+			<fileset dir="${test-src-dir}">
+				<patternset>
+					<include name="**/*.bsh"/>
+				</patternset>
 			</fileset>
 		</copy>
+
 		<tstamp>
 			<format property="DATE" pattern="yyyy-MM-dd hh:mm:ss" />
 		</tstamp>
 	</target>
-
 
 	<target name="javadoc" depends="compile">
 		<mkdir dir="${javadoc-dir}" />
@@ -220,6 +243,7 @@
 			 destdir="${javadoc-dir}"
 			 author="true"
 			 version="true"
+			 source="1.5"
 			 use="true"
 			 windowtitle="BeanShell ${version}"
 			 doctitle="&lt;h1&gt;BeanShell ${version}&lt;h1&gt;"
@@ -237,7 +261,9 @@
 	<target name="clean">
 		<delete quiet="true" dir="${build-dir}"/>
 		<delete quiet="true" dir="${javadoc-dir}"/>
+		<!--
 		<delete quiet="true" dir="${dist-dir}"/>
+		-->
 		
 		<!-- clear the junit reports: -->
 		<delete quiet="true" dir="${junit-reports}" />
@@ -319,6 +345,14 @@
 		</patternset>
 	</fileset>
 
+	<fileset id="bshservlet-fileset" dir="${build-dir}">
+		<patternset id="bshservlet-patternset">
+			<include name="bsh/servlet/*.class"/>
+			<include name="bsh/servlet/*.bsh"/>
+			<include name="bsh/servlet/*.template"/>
+		</patternset>
+	</fileset>
+
 	<fileset id="commands-fileset" dir="${build-dir}">
 		<patternset>
 			<include name="bsh/commands/*.class"/>
@@ -326,6 +360,7 @@
 		<patternset id="commands-bsh-patternset">
 			<include name="bsh/commands/*.bsh"/>
 			<exclude name="CVS"/>
+			<exclude name=".svn"/>
 		</patternset>
 	</fileset>
 
@@ -337,6 +372,7 @@
 		<patternset id="util-lib-patternset">
 			<include name="bsh/util/lib/*"/>
 			<exclude name="CVS"/>
+			<exclude name=".svn"/>
 		</patternset>
 	</fileset>
 
@@ -345,6 +381,7 @@
 	<!-- Jar targets -->
 
 	<target name="jarcore" depends="compile,_distdir">
+	<!--
         <fail message="Please use ant 1.8">
             <condition>
                 <not>
@@ -352,6 +389,7 @@
                 </not>
             </condition>
         </fail>
+    -->
     <delete file="${core-jar}"/>
 		<jar jarfile="${core-jar}">
 			<manifest>
@@ -362,7 +400,9 @@
 				<attribute name="Implementation-Version" value="${version} ${DATE}" />
 				<attribute name="Implementation-Vendor" value="${Implementation-Vendor}" />
 			</manifest>
+			<!--
             <service type="javax.script.ScriptEngineFactory" provider="bsh.BshScriptEngineFactory"/>
+			-->
 			<fileset refid="core-fileset"/>
 		</jar>
 	</target>
@@ -378,7 +418,9 @@
 				<attribute name="Implementation-Version" value="${version} ${DATE}" />
 				<attribute name="Implementation-Vendor" value="${Implementation-Vendor}" />
 			</manifest>
+			<!--
             <service type="javax.script.ScriptEngineFactory" provider="bsh.BshScriptEngineFactory"/>
+			-->
 			<fileset refid="core-fileset"/>
 			<fileset refid="classpath-fileset"/>
 			<fileset refid="reflect-fileset"/>
@@ -387,6 +429,7 @@
 			<fileset refid="commands-fileset"/>
 			<fileset refid="bsf-fileset"/>
 			<fileset refid="classgen-fileset"/>
+			<fileset refid="bshservlet-fileset"/>
 <!-- hack, see core-fileset -->
 			<fileset dir="${build-dir}">
 				<patternset>
@@ -409,8 +452,23 @@
 				<exclude name="javadoc/**/*"/>
 				<!--exclude name="docs/**/*"/-->
 				<exclude name="**/CVS"/>
+				<exclude name="**/.svn"/>
 			</zipfileset>
 		</zip>
+	</target>
+	<target name="jarsrc" depends="_distdir">
+		<delete file="${src-jar}"/>
+		<zip zipfile="${src-jar}">
+			<zipfileset dir="src" prefix="">
+				<include name="**/*.java"/>
+				<exclude name="**/CVS"/>
+				<exclude name="**/.svn"/>
+			</zipfileset>
+		</zip>
+	</target>
+	<target name="pom" depends="_distdir">
+		<delete file="${pom}"/>
+		<copy file="pom.xml" tofile="${pom}" />
 	</target>
 
 	<target name="_distdir">
@@ -432,7 +490,7 @@
 	</target>
 	
 	<!-- Make all of the dist jars -->
-	<target name="dist" depends="_distdir,compile-all,jarcore,jarall,javadoc,zipsrc,bshservlet-war,bshservlet-wbsh-war,bshdoc">
+	<target name="dist" depends="_distdir,compile-all,jarcore,jarall,javadoc,zipsrc,jarsrc,pom,bshservlet-war,bshservlet-wbsh-war,bshdoc">
 
 		<antcall target="jarfileset">
 			<param name="target-jar" value="${commands-jar}"/>
@@ -472,6 +530,13 @@
 
 		<delete file="${javadoc-zip}"/>
 		<zip zipfile="${javadoc-zip}" basedir="${javadoc-dir}"/>
+                <checksum fileext=".sha1" algorithm="SHA" forceoverwrite="true">
+                   <fileset dir="${dist-dir}">
+                     <include name="*.zip" />
+                     <include name="*.jar" />
+                     <include name="*.pom" />
+                   </fileset>
+                </checksum>
 
 		<!-- Build the documentation -->
 		<!-- Don't build the documentation right now.
@@ -494,7 +559,8 @@
 			<fileset dir="${src-dir}/bsh/servlet/" includes="index.html"/>
 		</war>
 	</target>
-	<target name="bshservlet-wbsh-war" depends="compile,jarall" unless="exclude-servlet">
+	<target name="bshservlet-wbsh-war" 
+					depends="compile,jarall" unless="exclude-servlet">
 		<war warfile="${bshservlet-wbsh-war}" 
 			webxml="${src-dir}/bsh/servlet/example-web.xml">
 			<manifest>
@@ -584,8 +650,8 @@
 				destdir="${build-dir}"
 				debug="on"
 				debuglevel="lines,vars,source"
-				source="${ant.build.javac.source}"
-				target="${ant.build.javac.target}"
+				source="1.6"
+				target="1.6"
 			  >
 		 <classpath>
 			<path refid="test-classpath"/>
