@@ -97,6 +97,7 @@ class BSHTryStatement extends SimpleNode
 
 		
 		// If we have an exception, find a catch
+		try {
 		if (thrown != null) 
 		{
 			int n = catchParams.size();
@@ -171,12 +172,13 @@ class BSHTryStatement extends SimpleNode
 				break;
 			}
 		}
-
+		} finally {
 		// evaluate finally block
 		if( finallyBlock != null ) {
 			Object result = finallyBlock.eval(callstack, interpreter);
 			if( result instanceof ReturnControl )
 				return result;
+		}
 		}
 
 		// exception fell through, throw it upward...

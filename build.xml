@@ -18,7 +18,7 @@
 
     <property name="ant.build.javac.target" value="1.6" />
     <property name="ant.build.javac.source" value="1.6" />
-	<property name="version" value="2.0.0"/>
+	<property name="version" value="2.2.0"/>
 	<property name="deprecation" value="on"/>
 	<property name="Specification-Title" value="BeanShell" />
 	<property name="Specification-Version" value="${version}" />
@@ -171,7 +171,6 @@
 			excludes="${excludes},**/bak/**"
 			source="1.6"
 			target="1.6"
-			includeantruntime="false"
 		>
 			<classpath>
 				<fileset refid="lib-fileset"/>
@@ -207,7 +206,6 @@
 			excludes="${excludes},**/bak/**"
 			source="1.6"
 			target="1.6"
-			includeantruntime="false"
 		>
 			<classpath>
 				<fileset refid="lib-fileset"/>
@@ -654,7 +652,6 @@
 				debuglevel="lines,vars,source"
 				source="1.6"
 				target="1.6"
-				includeantruntime="false"
 			  >
 		 <classpath>
 			<path refid="test-classpath"/>
