@@ -31,7 +31,8 @@ package bsh;
 
 import java.util.*;
 
-public class StringUtil {
+public class StringUtil
+{
 
 	public static String [] split( String s, String delim) {
 		List<String> v = new ArrayList<String>();
@@ -50,20 +51,36 @@ public class StringUtil {
 
     public static String methodString(String name, Class[] types)
     {
-        StringBuilder sb = new StringBuilder();
-        sb.append(name);
-        sb.append('(');
+        StringBuilder sb = new StringBuilder(name + "(");
+        if ( types.length > 0 )
+			sb.append(" ");
         for( int i=0; i<types.length; i++ )
         {
             Class c = types[i];
-            if (i != 0) {
-                sb.append(", ");
-            }
-            sb.append((c == null) ? "null" : c.getName());
+            sb.append( ( (c == null) ? "null" : c.getName() ) 
+				+ ( i < (types.length-1) ? ", " : " " ) );
         }
-        sb.append(')');
+        sb.append(")");
         return sb.toString();
     }
+
+	/**
+		Split a filename into dirName, baseName
+		@return String [] { dirName, baseName }
+    public String [] splitFileName( String fileName ) 
+	{ 
+		String dirName, baseName;
+		int i = fileName.lastIndexOf( File.separator );
+		if ( i != -1 ) {
+			dirName = fileName.substring(0, i);
+			baseName = fileName.substring(i+1);
+		} else
+			baseName = fileName;
+
+		return new String[] { dirName, baseName };
+	}
+
+	*/
 
 	/**
 		Hack - The real method is in Reflect.java which is not public.

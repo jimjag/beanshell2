@@ -103,6 +103,7 @@ public class OldScriptsTest {
 
 		@Override
 		public void runTest() throws Exception {
+            System.out.println(getClass().getResource("/bsh/commands/cd.bsh"));
 			System.out.println("file is " + _file.getAbsolutePath());
 			final Interpreter interpreter = new Interpreter();
 			final String path = '\"' + _file.getParentFile().getAbsolutePath().replace('\\', '/') + '\"';

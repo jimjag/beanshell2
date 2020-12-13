@@ -113,7 +113,7 @@ public class NameSpace implements Serializable, BshClassManager.Listener, NameSo
 		This is used for controlling static/object import precedence, etc.
 	*/
 	/*
-		Note: We will ll move this behavior out to a subclass of 
+		Note: We can move this class related behavior out to a subclass of 
 		NameSpace, but we'll start here.
 	*/
 	boolean isClass;
@@ -306,10 +306,17 @@ public class NameSpace implements Serializable, BshClassManager.Listener, NameSo
 		Variable existing = getVariableImpl( name, recurse );
 
 		// Found an existing variable here (or above if recurse allowed)
-		if ( existing != null ) {
+		if ( existing != null )
+		{
+			try {
 			existing.setValue( value, Variable.ASSIGNMENT );
-		} else {
+			} catch ( UtilEvalError e ) {
+				throw new UtilEvalError(
+					"Variable assignment: " + name + ": " + e.getMessage());
+			}
+		} else 
             // No previous variable definition found here (or above if recurse)
+		{
             if ( strictJava )
 				throw new UtilEvalError(
 					"(Strict Java mode) Assignment to undeclared variable: "
@@ -637,11 +644,6 @@ public class NameSpace implements Serializable, BshClassManager.Listener, NameSo
 
 		// Null value is just a declaration
 		// Note: we might want to keep any existing value here instead of reset
-	/*
-	// Moved to Variable
-		if ( value == null )
-			value = Primitive.getDefaultValue( type );
-	*/
 
 		// does the variable already exist?
 		if ( existing != null ) 
@@ -1205,6 +1207,7 @@ public class NameSpace implements Serializable, BshClassManager.Listener, NameSo
 	protected void getAllNamesAux( List<String> list ) 
 	{
 		list.addAll( variables.keySet() );
+		if ( methods != null )
 		list.addAll( methods.keySet() );
 		if ( parent != null )
 			parent.getAllNamesAux( list );

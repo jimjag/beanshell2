@@ -103,7 +103,7 @@ public class Interpreter
 {
 	/* --- Begin static members --- */
 
-	public static final String VERSION = "2.1.9+";
+	public static final String VERSION = "2.2.0";
 	/*
 		Debug utils are static so that they are reachable by code that doesn't
 		necessarily have an interpreter reference (e.g. tracing in utils).
@@ -113,6 +113,7 @@ public class Interpreter
 		turns it on or off.
 	*/
 	public static boolean DEBUG, TRACE, LOCALSCOPING;
+	public static boolean COMPATIBIILTY;
 
 	// This should be per instance
 	transient static PrintStream debug;
@@ -155,6 +156,13 @@ public class Interpreter
 
 	/** Control the verbose printing of results for the show() command. */
 	private boolean showResults;
+
+	/**
+	 * Compatibility mode. When {@code true} missing classes are tried to create from corresponding java source files.
+	 * Default value is {@code false}, could be changed to {@code true} by setting the system property
+	 * "bsh.compatibility" to "true".
+	 */
+	private boolean compatibility = COMPATIBIILTY;
 
 	/* --- End instance data --- */
 
@@ -263,7 +271,7 @@ public class Interpreter
 		this( new StringReader(""), 
 			System.out, System.err, false, null );
 		evalOnly = true;
-		setu( "bsh.evalOnly", new Primitive(true) );
+		setu( "bsh.evalOnly", Primitive.TRUE );
 	}
 
 	// End constructors
@@ -301,9 +309,9 @@ public class Interpreter
 		}
 
 		// bsh.interactive
-		setu( "bsh.interactive", new Primitive(interactive) );
+		setu( "bsh.interactive", interactive ? Primitive.TRUE : Primitive.FALSE );
 		// bsh.evalOnly
-		setu( "bsh.evalOnly", new Primitive(evalOnly) );
+		setu( "bsh.evalOnly", evalOnly ? Primitive.TRUE : Primitive.FALSE );
 	}
 
 	/**
@@ -441,7 +449,7 @@ public class Interpreter
 				eval("printBanner();"); 
 			} catch ( EvalError e ) {
 				println(
-					"BeanShell2 " + VERSION + " - https://github.com/jimjag/beanshell2");
+					"BeanShell " + VERSION + " - https://github.com/jimjag/beanshell2");
 			}
 
 		// init the callstack.  
@@ -652,6 +660,14 @@ public class Interpreter
 						node.lastToken.next = null;  // prevent OutOfMemoryError
 
 					node = (SimpleNode)localInterpreter.get_jjtree().rootNode();
+					// quick filter for when we're running as a compiler only
+					if ( getSaveClasses()
+						&& !(node instanceof BSHClassDeclaration)
+						&& !(node instanceof BSHImportDeclaration )
+						&& !(node instanceof BSHPackageDeclaration )
+					)
+						continue;
+
 					// nodes remember from where they were sourced
 					node.setSourceFile( sourceFileInfo );
 
@@ -689,10 +705,9 @@ public class Interpreter
 				throw e;
 
 			} catch ( InterpreterError e ) {
-				e.printStackTrace();
-				throw new EvalError(
-					"Sourced file: "+sourceFileInfo+" internal Error: " 
-					+ e.getMessage(), node, callstack);
+                final EvalError evalError = new EvalError("Sourced file: " + sourceFileInfo + " internal Error: " + e.getMessage(), node, callstack);
+                evalError.initCause(e);
+                throw evalError;
 			} catch ( TargetError e ) {
 				// failsafe, set the Line as the origin of the error.
 				if ( e.getNode()==null )
@@ -706,15 +721,13 @@ public class Interpreter
 					e.setNode( node );
 				e.reThrow( "Sourced file: "+sourceFileInfo );
 			} catch ( Exception e) {
-				if ( DEBUG)
-					e.printStackTrace();
-				throw new EvalError(
-					"Sourced file: "+sourceFileInfo+" unknown error: " 
-					+ e.getMessage(), node, callstack, e);
+                final EvalError evalError = new EvalError("Sourced file: " + sourceFileInfo + " unknown error: " + e.getMessage(), node, callstack);
+                evalError.initCause(e);
+                throw evalError;
 			} catch(TokenMgrError e) {
-				throw new EvalError(
-					"Sourced file: "+sourceFileInfo+" Token Parsing Error: " 
-					+ e.getMessage(), node, callstack, e );
+                final EvalError evalError = new EvalError("Sourced file: " + sourceFileInfo + " Token Parsing Error: " + e.getMessage(), node, callstack);
+                evalError.initCause(e);
+                throw evalError;
 			} finally {
 				localInterpreter.get_jjtree().reset();
 
@@ -909,7 +922,7 @@ public class Interpreter
 		set(name, new Primitive(value));
 	}
 	public void set(String name, boolean value) throws EvalError {
-		set(name, new Primitive(value));
+        set(name, value ? Primitive.TRUE : Primitive.FALSE);
 	}
 
 	/**
@@ -1118,17 +1131,13 @@ public class Interpreter
 
 	static void staticInit() 
 	{
-	/* 
-		Apparently in some environments you can't catch the security exception
-		at all...  e.g. as an applet in IE  ... will probably have to work 
-		around 
-	*/
 		try {
 			systemLineSeparator = System.getProperty("line.separator");
 			debug = System.err;
 			DEBUG = Boolean.getBoolean("debug");
 			TRACE = Boolean.getBoolean("trace");
 			LOCALSCOPING = Boolean.getBoolean("localscoping");
+			COMPATIBIILTY = Boolean.getBoolean("bsh.compatibility");
 			String outfilename = System.getProperty("outfile");
 			if ( outfilename != null )
 				redirectOutputToFile( outfilename );
@@ -1243,6 +1252,13 @@ public class Interpreter
 		return showResults;
 	}
 
+	public static String getSaveClassesDir() {
+		return System.getProperty("saveClasses");
+	}
+
+	public static boolean getSaveClasses()  {
+		return getSaveClassesDir() != null;
+	}
 
 	public static void setShutdownOnExit(final boolean value) {
 		try {
@@ -1252,4 +1268,27 @@ public class Interpreter
 		}
 	}
 
+
+	/**
+	 * Compatibility mode. When {@code true} missing classes are tried to create from corresponding java source files.
+	 * The Default value is {@code false}. This could be changed to {@code true} by setting the system property
+	 * "bsh.compatibility" to "true".
+	 *
+	 * @see #setCompatibility(boolean)
+	 */
+	public boolean getCompatibility() {
+		return compatibility;
+	}
+
+
+	/**
+	 * Setting compatibility mode. When {@code true} missing classes are tried to create from corresponding java source
+	 * files. The Default value is {@code false}. This could be changed to {@code true} by setting the system property
+	 * "bsh.compatibility" to "true".
+	 *
+	 * @see #getCompatibility()
+	 */
+	public void setCompatibility(final boolean value) {
+		compatibility = value;
+	}
 }

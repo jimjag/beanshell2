@@ -125,6 +125,22 @@ class Types
 		}
 	}
 
+	/**
+	 * Are the two signatures exactly equal? This is checked for a special
+	 * case in overload resolution.
+	 */
+	static boolean areSignaturesEqual(Class[] from, Class[] to)
+	{
+		if (from.length != to.length)
+			return false;
+
+		for (int i = 0; i < from.length; i++)
+			if (from[i] != to[i])
+				return false;
+
+		return true;
+	}	
+	
 	private static boolean isSignatureVarargsAssignable(
 		Class[] from, Class[] to )
 	{
@@ -166,7 +182,7 @@ class Types
 		assignment rules, not including auto-boxing/unboxing.
 	 @param rhsType may be null to indicate primitive null value
 	*/
-	static boolean isJavaBaseAssignable( Class lhsType, Class rhsType )
+	static boolean isJavaBaseAssignable( Class<?> lhsType, Class<?> rhsType )
 	{
 		/*
 			Assignment to loose type, defer to bsh extensions
@@ -369,7 +385,7 @@ class Types
 		conversions...  Where does that need to go?
 	*/
 	private static Object castObject(
-		Class toType, Class fromType, Object fromValue,
+		Class<?> toType, Class<?> fromType, Object fromValue,
 		int operation, boolean checkOnly )
 		throws UtilEvalError
 	{

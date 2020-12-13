@@ -29,7 +29,7 @@
 
 package bsh;
 
-import java.lang.reflect.AccessibleObject;
+import java.lang.reflect.Field;
 import java.util.Hashtable;
 
 /**
@@ -67,19 +67,27 @@ public class Capabilities
 	}
 
 	public static void setAccessibility( boolean b ) 
+		throws Unavailable
 	{
 		if ( b == false )
 		{
 			accessibility = false;
 		} else {
-			String.class.getDeclaredMethods(); // test basic access
+
+			// test basic access
 			try {
-                final AccessibleObject member = String.class.getDeclaredField("value");
-                member.setAccessible(true);
-                member.setAccessible(false);
+				String.class.getDeclaredMethods();
+			try {
+					final Field field = Capabilities.class.getField("classes");
+					field.setAccessible(true);
+					field.setAccessible(false);
 			} catch (NoSuchFieldException e) {
                 // ignore
 			}
+			} catch ( SecurityException e ) {
+				throw new Unavailable("Accessibility unavailable: "+e);
+			}
+	
 			accessibility = true;
 		}
 		BshClassManager.clearResolveCache();

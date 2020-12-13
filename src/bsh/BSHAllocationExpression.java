@@ -120,7 +120,8 @@ class BSHAllocationExpression extends SimpleNode
         try {
             obj = Reflect.constructObject( type, args );
         } catch ( ReflectError e) {
-            throw new EvalError("Constructor error: " + e.getMessage(), this, callstack, e );
+            throw new EvalError(
+				"Constructor error: " + e.getMessage(), this, callstack );
         } catch (InvocationTargetException e) {
 			// No need to wrap this debug
 			Interpreter.debug("The constructor threw an exception:\n\t" + e.getTargetException());
@@ -161,16 +162,24 @@ class BSHAllocationExpression extends SimpleNode
 		return obj;
 	}
 
+	// TODO
+	/*
+		This is totally broken...
+		need to construct a real inner class block here...
+	*/
 	private Object constructWithClassBody( 
 		Class type, Object[] args, BSHBlock block,
 		CallStack callstack, Interpreter interpreter ) 
 		throws EvalError
 	{
+		//throw new InterpreterError("constructWithClassBody unimplemented");
+
 		String name = callstack.top().getName() + "$" + (++innerClassCount);
 		Modifiers modifiers = new Modifiers();
 		modifiers.addModifier( Modifiers.CLASS, "public" );
 		Class clas = ClassGenerator.getClassGenerator() .generateClass( 
 				name, modifiers, null/*interfaces*/, type/*superClass*/, 
+// block is not innerClassBlock here!!!
 				block, false/*isInterface*/, callstack, interpreter );
 		try {
 			return Reflect.constructObject( clas, args );

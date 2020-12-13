@@ -320,7 +320,7 @@ class Name implements java.io.Serializable
 					namespace : ((This)evalBaseObject).namespace;
 			Object obj = new NameSpace( 
 				targetNameSpace, "auto: "+varName ).getThis( interpreter );
-			targetNameSpace.setVariable( varName, obj, false );
+			targetNameSpace.setVariable( varName, obj, false, evalBaseObject == null );
 			return completeRound( varName, suffix(evalName), obj );
 		}
 
@@ -456,7 +456,7 @@ class Name implements java.io.Serializable
 	/**
 		Resolve a variable relative to a This reference.
 
-		This is the general variable resolution method, accomodating special
+		This is the general variable resolution method, accommodating special
 		fields from the This context.  Together the namespace and interpreter
 		comprise the This context.  The callstack, if available allows for the
 		this.caller construct.  
@@ -588,7 +588,7 @@ class Name implements java.io.Serializable
 
 
 		if ( obj == null )
-			obj = thisNameSpace.getVariable(varName);
+			obj = thisNameSpace.getVariable(varName, evalBaseObject == null);
 
 		if ( obj == null )
 			throw new InterpreterError("null this field ref:"+varName);
@@ -601,6 +601,9 @@ class Name implements java.io.Serializable
 	*/
 	static NameSpace getClassNameSpace( NameSpace thisNameSpace ) 
 	{
+        if ( null == thisNameSpace )
+            return null;
+
 		// is a class instance
 		//if ( thisNameSpace.classInstance != null )
 		if ( thisNameSpace.isClass )
@@ -838,7 +841,8 @@ class Name implements java.io.Serializable
 
                 if (obj == Primitive.NULL)
                     throw new UtilTargetError( new NullPointerException( 
-						"Null Pointer in Method Invocation" ) );
+						"Null Pointer in Method Invocation of " +methodName
+							+"() on variable: "+targetName) );
 
                 // some other primitive
                 // should avoid calling methods on primitive, as we do

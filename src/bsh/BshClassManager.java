@@ -65,7 +65,7 @@ import java.util.WeakHashMap;
 
 	Note on version dependency:  This base class is JDK 1.1 compatible,
 	however we are forced to use weak references in the full featured
-	implementation (the optional bsh.classpath package) to accomodate all of
+	implementation (the optional bsh.classpath package) to accommodate all of
 	the fleeting namespace listeners as they fall out of scope.  (NameSpaces
 	must be informed if the class space changes so that they can un-cache
 	names).  
@@ -455,11 +455,11 @@ public class BshClassManager
 		int i = baseName.indexOf("$");
 		if ( i != -1 )
 			baseName = baseName.substring(i+1);
-		String cur = definingClassesBaseNames.get( baseName );
+		String cur = (String)definingClassesBaseNames.get( baseName );
 		if ( cur != null )
 			throw new InterpreterError("Defining class problem: "+className 
 				+": BeanShell cannot yet simultaneously define two or more "
-				+"dependant classes of the same name.  Attempt to define: "
+				+"dependent classes of the same name.  Attempt to define: "
 				+ className +" while defining: "+cur 
 			);
 		definingClasses.add( className );

@@ -31,9 +31,6 @@
 package bsh;
 
 import java.io.IOException;
-import java.io.NotSerializableException;
-import java.io.ObjectInputStream;
-import java.io.ObjectStreamException;
 import java.lang.reflect.*;
 import java.util.Map;
 import java.util.HashMap;
@@ -47,7 +44,7 @@ import java.util.HashMap;
 	This holds a reference to the declaring interpreter for callbacks from
 	outside of bsh.
 */
-public final class This implements java.io.Serializable, Runnable 
+public class This implements java.io.Serializable, Runnable 
 {
 	/**
 		The namespace that this This reference wraps.
@@ -68,7 +65,7 @@ public final class This implements java.io.Serializable, Runnable
 	*/
 	private Map<Integer,Object> interfaces;
 
-	private transient InvocationHandler invocationHandler = new Handler();
+	private final InvocationHandler invocationHandler = new Handler();
 
 	/**
 		getThis() is a factory for bsh.This type references.  The capabilities
@@ -132,12 +129,6 @@ public final class This implements java.io.Serializable, Runnable
 		return interf;
 	}
 
-
-	private void readObject(ObjectInputStream stream) throws IOException, ClassNotFoundException {
-		stream.defaultReadObject();
-		invocationHandler = new Handler();
-	}
-
 	/**
 		This is the invocation handler for the dynamic proxy.
 		<p>
@@ -150,14 +141,8 @@ public final class This implements java.io.Serializable, Runnable
 		classes aren't there (doesn't it?)  This class shouldn't be loaded
 		if an XThis isn't instantiated in NameSpace.java, should it?
 	*/
-	class Handler implements InvocationHandler {
-
-
-		private Object readResolve() throws ObjectStreamException {
-			throw new NotSerializableException();
-		}
-
-
+	class Handler implements InvocationHandler, java.io.Serializable 
+	{
 		public Object invoke( Object proxy, Method method, Object[] args ) 
 			throws Throwable
 		{
@@ -382,7 +367,7 @@ public final class This implements java.io.Serializable, Runnable
 		// a default equals() testing for equality with the This reference
 		if ( methodName.equals("equals") && args.length==1 ) {
 			Object obj = args[0];
-			return new Boolean( this == obj );
+			return this == obj ? Boolean.TRUE : Boolean.FALSE;
 		}
 
 		// a default clone()

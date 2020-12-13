@@ -58,7 +58,7 @@ class BSHTryStatement extends SimpleNode
 			catchBlocks.add((BSHBlock)jjtGetChild(i++));
 			node = null;
 		}
-		// finaly block
+		// finally block
 		BSHBlock finallyBlock = null;
 		if(node != null)
 			finallyBlock = (BSHBlock)node;
