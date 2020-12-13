@@ -6,7 +6,7 @@
 	http://www.apache.org/
 
 -->
-<project name="BeanShell2" default="compile-all" basedir=".">
+<project name="BeanShell" default="compile-all" basedir=".">
 
 <!-- Project Configuration -->
 
@@ -16,7 +16,7 @@
     <property name="ant.build.javac.source" value="1.8" />
 	<property name="version" value="2.1.9+"/>
 	<property name="deprecation" value="on"/>
-	<property name="Specification-Title" value="BeanShell2" />
+	<property name="Specification-Title" value="BeanShell" />
 	<property name="Specification-Version" value="${version}" />
 	<property name="Specification-Vendor" value="http://www.beanshell.org/" />
 	<property name="Implementation-Vendor" value="https://github.com/pejobo/beanshell2" />
@@ -221,8 +221,8 @@
 			 author="true"
 			 version="true"
 			 use="true"
-			 windowtitle="BeanShell2 ${version}"
-			 doctitle="&lt;h1&gt;BeanShell2 ${version}&lt;h1&gt;"
+			 windowtitle="BeanShell ${version}"
+			 doctitle="&lt;h1&gt;BeanShell ${version}&lt;h1&gt;"
 			 bottom="&lt;em&gt;&#169; 2000-2005 pat@pat.net :-)&lt;/em&gt;"
 		/>
 	</target>
@@ -356,7 +356,7 @@
 		<jar jarfile="${core-jar}">
 			<manifest>
 				<attribute name="Main-Class" value="bsh.Interpreter" />
-				<attribute name="Specification-Title" value="BeanShell2 core" />
+				<attribute name="Specification-Title" value="BeanShell core" />
 				<attribute name="Specification-Version" value="${version}" />
 				<attribute name="Specification-Vendor" value="${Specification-Vendor}" />
 				<attribute name="Implementation-Version" value="${version} ${DATE}" />
@@ -400,7 +400,7 @@
 	<target name="zipsrc" depends="_distdir">
 		<delete file="${src-zip}"/>
 		<zip zipfile="${src-zip}">
-			<zipfileset dir="." prefix="BeanShell2-${version}">
+			<zipfileset dir="." prefix="BeanShell-${version}">
 				<exclude name="classes*"/>
 				<exclude name="classes/**/*"/>
 				<exclude name="dist*"/>
@@ -484,7 +484,7 @@
 		<war warfile="${bshservlet-war}" 
 			webxml="${src-dir}/bsh/servlet/example-web.xml">
 			<manifest>
-				<attribute name="Specification-Title" value="BeanShell2 webapp" />
+				<attribute name="Specification-Title" value="BeanShell webapp" />
 				<attribute name="Specification-Version" value="${version}" />
 				<attribute name="Specification-Vendor" value="${Specification-Vendor}" />
 				<attribute name="Implementation-Version" value="${version} ${DATE}" />
@@ -498,7 +498,7 @@
 		<war warfile="${bshservlet-wbsh-war}" 
 			webxml="${src-dir}/bsh/servlet/example-web.xml">
 			<manifest>
-				<attribute name="Specification-Title" value="BeanShell2 webapp" />
+				<attribute name="Specification-Title" value="BeanShell webapp" />
 				<attribute name="Specification-Version" value="${version}" />
 				<attribute name="Specification-Vendor" value="${Specification-Vendor}" />
 				<attribute name="Implementation-Version" value="${version} ${DATE}" />
@@ -584,7 +584,7 @@
 				destdir="${build-dir}"
 				debug="on"
 				debuglevel="lines,vars,source"
-				source="${ant.build.javac.s}"
+				source="${ant.build.javac.source}"
 				target="${ant.build.javac.target}"
 			  >
 		 <classpath>
