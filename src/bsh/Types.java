@@ -29,6 +29,15 @@
 
 package bsh;
 
+import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.AbstractMap.SimpleEntry;
+import java.util.Map.Entry;
+
 /**
 	Static routines supporing type comparison and conversion in BeanShell.
 
@@ -45,6 +54,68 @@ class Types
 		declarations (e.g. byte b = 42;)
 	*/
 	static final int CAST=0, ASSIGNMENT=1;
+    /** The order of number types. */
+    private static final Map<Class<?>, Integer> NUMBER_ORDER
+        = Collections.unmodifiableMap(new HashMap<Class<?>, Integer>() {
+            private static final long serialVersionUID = 1L;
+        {
+            put(Byte.TYPE, 0);
+            put(Byte.class, 1);
+            put(Short.TYPE, 2);
+            put(Short.class, 3);
+            put(Character.TYPE, 4);
+            put(Character.class, 5);
+            put(Integer.TYPE, 6);
+            put(Integer.class, 7);
+            put(Long.TYPE, 8);
+            put(Long.class, 9);
+            put(Float.TYPE, 10);
+            put(Float.class, 11);
+            put(Double.TYPE, 12);
+            put(Double.class, 13);
+            put(BigInteger.class, 14);
+            put(BigDecimal.class, 15);
+        }
+    });
+
+    /** Helper class for type suffixes. */
+    public static class Suffix {
+        private static final Map<String, Class<?>> m
+            = Collections.unmodifiableMap(new HashMap<String, Class<?>>() {
+                private static final long serialVersionUID = 1L;
+            {
+                put("O", Byte.TYPE);
+                put("S", Short.TYPE);
+                put("I", Integer.TYPE);
+                put("L", Long.TYPE);
+                put("W", BigInteger.class);
+                put("w", BigDecimal.class);
+                put("d", Double.TYPE);
+                put("f", Float.TYPE);
+            }
+        });
+
+        private static String toUpperKey(Character key) {
+            return key.toString().toUpperCase();
+        }
+
+        private static String toLowerKey(Character key) {
+            return key.toString().toLowerCase();
+        }
+
+        public static boolean isIntegral(Character key) {
+            return m.containsKey(toUpperKey(key));
+        }
+        public static Class<?> getIntegralType(Character key) {
+            return m.get(toUpperKey(key));
+        }
+        public static boolean isFloatingPoint(Character key) {
+            return m.containsKey(toLowerKey(key));
+        }
+        public static Class<?> getFloatingPointType(Character key) {
+            return m.get(toLowerKey(key));
+        }
+    };
 	
 	static final int 
 		JAVA_BASE_ASSIGNABLE = 1,
@@ -65,15 +136,15 @@ class Types
 	static Primitive VALID_CAST = new Primitive(1);
 	static Primitive INVALID_CAST = new Primitive(-1);
 
-	/**
-		Get the Java types of the arguments.
-	*/
-    public static Class[] getTypes( Object[] args )
+    /** Get the Java types of the arguments.
+     * @param args object array of argument values.
+     * @return class array of argument types. */
+    public static Class<?>[] getTypes( Object[] args )
     {
         if ( args == null )
             return new Class[0];
 
-        Class[] types = new Class[ args.length ];
+        Class<?>[] types = new Class[ args.length ];
 
         for( int i=0; i<args.length; i++ )
         {
@@ -87,6 +158,25 @@ class Types
         }
 
         return types;
+    }
+
+    /** Find the type of an object.
+     * @param arg the object to query.
+     * @return null if arg null, getType if Primitive or getClass. */
+    public static Class<?> getType( Object arg ) {
+        return getType(arg, false);
+    }
+
+    /** Find the type of an object boxed or not.
+     * @param arg the object to query.
+     * @param boxed whether to get a primitive or boxed type.
+     * @return null if arg null, type of Primitive or getClass. */
+    public static Class<?> getType( Object arg, boolean boxed ) {
+        if ( null == arg || Primitive.NULL == arg )
+            return null;
+        if ( arg instanceof Primitive && !boxed )
+            return ((Primitive) arg).getType();
+       return Primitive.unwrap(arg).getClass();
     }
 
 	/**
@@ -142,9 +232,34 @@ class Types
 	}	
 	
 	private static boolean isSignatureVarargsAssignable(
-		Class[] from, Class[] to )
+        Class<?>[] from, Class<?>[] to )
 	{
+        if ( to.length == 0 || to.length > from.length + 1 )
+            return false;
+
+        int last = to.length - 1;
+        if ( to[last] == null || !to[last].isArray() )
+            return false;
+
+        if ( from.length == to.length
+                && from[last] != null
+                && from[last].isArray()
+                && !isJavaAssignable(to[last].getComponentType(),
+                        from[last].getComponentType()) )
 		return false;
+
+        if ( from.length >= to.length
+                && from[last] != null
+                && !from[last].isArray() )
+            for ( int i = last; i < from.length; i++ )
+                if ( !isJavaAssignable(to[last].getComponentType(), from[i]) )
+                    return false;
+
+        for ( int i = 0; i < last; i++ )
+            if ( !isJavaAssignable(to[i], from[i]) )
+                return false;
+
+        return true;
 	}
 
 	/**
@@ -194,47 +309,21 @@ class Types
 		if ( lhsType == null )
 			return false;
 
-		// null rhs type corresponds to type of Primitive.NULL
-		// assignable to any object type
+        // null rhs type corresponds to type of Primitive.NULL assignable to any
+        // object type but we give preference here to string types
 		if ( rhsType == null )
-			return !lhsType.isPrimitive();
+            return lhsType == String.class;
 
-		if ( lhsType.isPrimitive() && rhsType.isPrimitive() )
-		{
+        if ( lhsType.isPrimitive() && rhsType.isPrimitive() ) {
 			if ( lhsType == rhsType )
 				return true;
 
 			// handle primitive widening conversions - JLS 5.1.2
-			if ( (rhsType == Byte.TYPE) &&
-				(lhsType == Short.TYPE || lhsType == Integer.TYPE
-				|| lhsType == Long.TYPE || lhsType == Float.TYPE
-				|| lhsType == Double.TYPE))
-                    return true;
-
-            if ( (rhsType == Short.TYPE) &&
-				(lhsType == Integer.TYPE || lhsType == Long.TYPE ||
-                lhsType == Float.TYPE || lhsType == Double.TYPE))
-                    return true;
-
-            if ((rhsType == Character.TYPE) &&
-				(lhsType == Integer.TYPE || lhsType == Long.TYPE ||
-                lhsType == Float.TYPE || lhsType == Double.TYPE))
-                    return true;
-
-            if ((rhsType == Integer.TYPE) &&
-				(lhsType == Long.TYPE || lhsType == Float.TYPE ||
-                lhsType == Double.TYPE))
-                    return true;
-
-            if ((rhsType == Long.TYPE) &&
-				(lhsType == Float.TYPE || lhsType == Double.TYPE))
-                return true;
-
-            if ((rhsType == Float.TYPE) && (lhsType == Double.TYPE))
-                return true;
+            if ( NUMBER_ORDER.containsKey(rhsType)
+                    && NUMBER_ORDER.containsKey(lhsType) )
+                return NUMBER_ORDER.get(rhsType) < NUMBER_ORDER.get(lhsType);
         }
-        else
-            if ( lhsType.isAssignableFrom(rhsType) )
+        else if ( lhsType.isAssignableFrom(rhsType) )
                 return true;
 
         return false;
@@ -254,6 +343,11 @@ class Types
 		if ( lhsType == Object.class )
 			return true;
 
+        // null rhs type corresponds to type of Primitive.NULL
+        // assignable to any object type but not array
+        if (rhsType == null)
+            return !lhsType.isPrimitive() && !lhsType.isArray();
+
 		// prim numeric type can be boxed and assigned to number
 		if ( lhsType == Number.class
 			&& rhsType != Character.TYPE
@@ -268,7 +362,7 @@ class Types
 		if ( Primitive.wrapperMap.get( lhsType ) == rhsType )
 			return true;
 
-		return false;
+        return isJavaBaseAssignable(lhsType, rhsType);
 	}
 
 	/**
@@ -286,6 +380,56 @@ class Types
 			// This should not happen with checkOnly true
 			throw new InterpreterError("err in cast check: "+e);
 		}
+	}
+
+    /** Find array element type for class.
+     * Roll back component type until class is not an array anymore.
+     * @param arrType the class to inspect
+     * @return null if type is null or the class when class not array */
+	public static Class<?> arrayElementType(Class<?> arrType) {
+        if ( null == arrType )
+            return null;
+        while ( arrType.isArray() )
+            arrType = arrType.getComponentType();
+        return arrType;
+    }
+
+    /** Find the number of array dimensions for class.
+     * By counting the number of [ prefixing the class name.
+     * @param arrType the class to inspect
+     * @return number of [ name prefixes */
+    public static int arrayDimensions(Class<?> arrType) {
+        if ( null == arrType || !arrType.isArray() )
+            return 0;
+        return arrType.getName().lastIndexOf('[') + 1;
+    }
+
+    /** Find the common type between two classes.
+     * @param common most likely common class
+     * @param compare class compared with
+     * @return the class representing the most common type. */
+    public static Class<?> getCommonType(Class<?> common, Class<?> compare) {
+        if ( null == common )
+            return compare;
+        if ( null == compare || common.isAssignableFrom(compare) )
+            return common;
+
+        // pick the largest number type based on NUMBER_ORDER definitions
+        if ( NUMBER_ORDER.containsKey(common)
+                && NUMBER_ORDER.containsKey(compare) )
+            if ( NUMBER_ORDER.get(common) >= NUMBER_ORDER.get(compare) )
+                return common;
+            else
+                return compare;
+
+        // find a common super class
+        Class<?> supr = common;
+        while ( null != (supr = supr.getSuperclass()) && Object.class != supr )
+            if ( supr.isAssignableFrom(compare) )
+                return supr;
+
+        // common type can only be Object
+        return Object.class;
 	}
 
 	/**
@@ -308,17 +452,16 @@ class Types
 		@see #isBshAssignable( Class, Class )
 	*/
 	public static Object castObject(
-		Object fromValue, Class toType, int operation )
+		Object fromValue, Class<?> toType, int operation )
 		throws UtilEvalError
 	{
 		if ( fromValue == null )
-			throw new InterpreterError("null fromValue");
+        	throw new InterpreterError("null fromValue");
 
 		Class fromType =
 			fromValue instanceof Primitive ?
 				((Primitive)fromValue).getType()
 				: fromValue.getClass();
-
 		return castObject(
 			toType, fromType, fromValue, operation, false/*checkonly*/ );
 	}
@@ -538,4 +681,91 @@ class Types
 		return new UtilTargetError( cce );
     }
 
+    /** Return the baseName of an inner class.
+     * This should live in utilities somewhere.
+     * @param className the class name to modify
+     * @return the name before $ of a class */
+    public static String getBaseName(String className) {
+        int i = className.indexOf("$");
+        if (i == -1)
+            return className;
+
+        return className.substring(i + 1);
+    }
+
+    /** Consider BigInteger and BigDecimal as primitives.
+     * @param type the class type to inspect
+     * @return true if class isPrimitive, or BigInteger, or BigDecimal */
+    public static boolean isPrimitive(Class<?> type) {
+        return type.isPrimitive() || type == BigInteger.class || type == BigDecimal.class;
+    }
+
+    /** Consider Character as a number type.
+     * @param value the value to inspect.
+     * @return true if value is a Number or a Character. */
+    public static boolean isNumeric(Object value) {
+        return value instanceof Number || value instanceof Character;
+    }
+
+    /** Consider Float, Double and BigDecimal as floating point types.
+     * @param number the number to inspect
+     * @return true if number is a Float, or a Double, or a BigDecimal */
+    public static boolean isFloatingpoint(Object number) {
+        return number instanceof Float || number instanceof Double
+                || number instanceof BigDecimal;
+    }
+
+    /** Check if object is a Map type property type.
+     * @param obj to identify as a property type.
+     * @return true if object is a property type.*/
+    public static boolean isPropertyTypeMap(Object obj) {
+        return obj instanceof Map;
+    }
+
+    /** Check if class is a Map type property type.
+     * @param clas to identify as a property type.
+     * @return true if class is a property type.*/
+    public static boolean isPropertyTypeMap(Class<?> clas) {
+        return Map.class.isAssignableFrom(clas);
+    }
+
+    /** Check if object is an Entry type property type.
+     * @param obj to identify as a property type.
+     * @return true if object is a property type.*/
+    public static boolean isPropertyTypeEntry(Object obj) {
+        return obj instanceof Entry;
+    }
+
+    /** Check if class is an Entry type property type.
+     * @param clas to identify as a property type.
+     * @return true if class is a property type.*/
+    public static boolean isPropertyTypeEntry(Class<?> clas) {
+        return Entry.class.isAssignableFrom(clas);
+    }
+
+    /** Check if class is an Entry[] type property type.
+     * @param clas to identify as a property type.
+     * @return true if class is a property type.*/
+    public static boolean isPropertyTypeEntryList(Class<?> clas) {
+        return clas.isArray()
+                && isPropertyTypeEntry(clas.getComponentType());
+    }
+
+    /** Extended property types includes Map, Entry and Entry[].
+     * @param clas to identify as a property type.
+     * @return true if class is a property type.*/
+    public static boolean isPropertyType(Class<?> clas) {
+        return isPropertyTypeMap(clas)
+                || isPropertyTypeEntry(clas)
+                || isPropertyTypeEntryList(clas);
+    }
+
+    /** Collection types include Collection, Map or Entry.
+     * @param clas to identify as a property type.
+     * @return true if class is a collection type.*/
+    public static boolean isCollectionType(Class<?> clas) {
+        return Collection.class.isAssignableFrom(clas)
+            || Map.class.isAssignableFrom(clas)
+            || Entry.class.isAssignableFrom(clas);
+    }
 }
