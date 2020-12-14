@@ -78,9 +78,9 @@ public class Capabilities
 			try {
 				String.class.getDeclaredMethods();
 			try {
-					final Field field = Capabilities.class.getField("classes");
-					field.setAccessible(true);
-					field.setAccessible(false);
+				final Field field = Capabilities.class.getField("classes");
+				field.setAccessible(true);
+				field.setAccessible(false);
 			} catch (NoSuchFieldException e) {
                 // ignore
 			}
