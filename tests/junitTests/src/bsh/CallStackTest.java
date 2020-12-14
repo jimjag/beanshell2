@@ -35,7 +35,7 @@ import org.junit.Test;
 public class CallStackTest {
 
 	/**
-	 * <a href="https://github.com/jimjag/beanshell2/issues/detail?id=35">Issue 35 - CallStack class should be
+	 * <a href="https://github.com/pejobo/beanshell2/issues/detail?id=35">Issue 35 - CallStack class should be
 	 * Serializable</a>
 	 * @throws Exception in case of failure
 	 */

@@ -40,7 +40,7 @@ public class InterpreterTest {
 
 
 	/**
-	 * <a href="https://github.com/jimjag/beanshell2/issues/detail?id=50">Issue #50</a>
+	 * <a href="https://github.com/pejobo/beanshell2/issues/detail?id=50">Issue #50</a>
 	 */
 	@Test(timeout = 10000)
 	public void check_for_memory_leak() throws Exception {
