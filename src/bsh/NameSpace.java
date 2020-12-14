@@ -328,11 +328,32 @@ public class NameSpace implements Serializable, BshClassManager.Listener, NameSo
 			NameSpace varScope = this;
 
 			varScope.variables.put( 
-				name, new Variable( name, value, null/*modifiers*/ ) );
+				name, createVariable( name, value, null/*modifiers*/ ) );
 
 			// nameSpaceChanged() on new variable addition
 			nameSpaceChanged();
     	}
+	}
+
+	protected Variable createVariable(
+		String name, Object value, Modifiers mods )
+		throws UtilEvalError
+	{
+		return createVariable( name, null/*type*/, value, mods );
+	}
+
+	protected Variable createVariable(
+		String name, Class type, Object value, Modifiers mods )
+		throws UtilEvalError
+	{
+		return new Variable( name, type, value, mods );
+	}
+
+	protected Variable createVariable(
+		String name, Class type, LHS lhs )
+		throws UtilEvalError
+	{
+		return new Variable( name, type, lhs );
 	}
 
 	private void ensureVariables() {
@@ -671,7 +692,7 @@ public class NameSpace implements Serializable, BshClassManager.Listener, NameSo
 		} 
 
 		// Add the new typed var
-		variables.put( name, new Variable( name, type, value, modifiers ) );
+		variables.put( name, createVariable( name, type, value, modifiers ) );
     }
 
 	/**
@@ -948,7 +969,7 @@ public class NameSpace implements Serializable, BshClassManager.Listener, NameSo
 			Field field = Reflect.resolveJavaField( 
 				clas, name, false/*onlyStatic*/ );
 			if ( field != null )
-				return new Variable( 
+				return createVariable(
 					name, field.getType(), new LHS( object, field ) );
 		}
 
@@ -960,7 +981,7 @@ public class NameSpace implements Serializable, BshClassManager.Listener, NameSo
 			Field field = Reflect.resolveJavaField( 
 				clas, name, true/*onlyStatic*/ );
 			if ( field != null )
-				return new Variable( name, field.getType(), new LHS( field ) );
+				return createVariable( name, field.getType(), new LHS( field ) );
 		}
 
 		return null;

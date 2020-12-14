@@ -1,3 +1,30 @@
+/*****************************************************************************
+ * Licensed to the Apache Software Foundation (ASF) under one                *
+ * or more contributor license agreements.  See the NOTICE file              *
+ * distributed with this work for additional information                     *
+ * regarding copyright ownership.  The ASF licenses this file                *
+ * to you under the Apache License, Version 2.0 (the                         *
+ * "License"); you may not use this file except in compliance                *
+ * with the License.  You may obtain a copy of the License at                *
+ *                                                                           *
+ *     http://www.apache.org/licenses/LICENSE-2.0                            *
+ *                                                                           *
+ * Unless required by applicable law or agreed to in writing,                *
+ * software distributed under the License is distributed on an               *
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY                    *
+ * KIND, either express or implied.  See the License for the                 *
+ * specific language governing permissions and limitations                   *
+ * under the License.                                                        *
+ *                                                                           *
+ *                                                                           *
+ * This file is part of the BeanShell Java Scripting distribution.           *
+ * Documentation and updates may be found at http://www.beanshell.org/       *
+ * Patrick Niemeyer (pat@pat.net)                                            *
+ * Author of Learning Java, O'Reilly & Associates                            *
+ *                                                                           *
+ *****************************************************************************/
+ 
+ // TODO
 package	bsh;
 
 import java.util.List;
@@ -28,7 +55,21 @@ import java.util.Arrays;
 	introduced.
 */
 /*
-	Implementation notes:  bsh methods are not currently exported to the
+	Implementation notes:
+
+	It would seem that we should have been accomplished this by overriding the
+	getImportedVar() method of NameSpace, which behaves in a similar way
+	for fields of classes and objects.  However we need more control here to
+	be able to bump up the precedence and remove items that have been removed
+	via the map.  So we override getVariableImp().  We should reevaluate this
+	at some point.  All of NameSpace is a mess.
+
+	The primary abstraction here is that we override createVariable() to
+	create LHS Variables bound to the map for this namespace.
+
+	Methods:
+
+	bsh methods are not currently exported to the
 	external namespace.  All that would be required to add this is to override
 	setMethod() and provide a friendlier view than vector (currently used) for
 	overloaded forms (perhaps a map by method SignatureKey).
@@ -108,12 +149,17 @@ public class ExternalNameSpace extends NameSpace
 	/**
 	*/
 	/*
-		Notes: This implmenetation of getVariableImpl handles the following
+		Notes: This implementation of getVariableImpl handles the following
 		cases:
 		1) var in map not in local scope - var was added through map
 		2) var in map and in local scope - var was added through namespace
 		3) var not in map but in local scope - var was removed via map
 		4) var not in map and not in local scope - non-existent var
+
+		Note: It would seem that we could simply override getImportedVar()
+		in NameSpace, rather than this higher level method.  However we need
+		more control here to change the import precedence and remove variables
+		if they are removed via the extenal map.
 	*/
     protected Variable getVariableImpl( String name, boolean recurse ) 
 		throws UtilEvalError

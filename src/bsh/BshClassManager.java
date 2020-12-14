@@ -31,6 +31,7 @@ package bsh;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -126,6 +127,9 @@ public class BshClassManager
 		}
 	}
 
+	/** @see #associateClass( Class ) */
+	protected transient Hashtable associatedClasses = new Hashtable();
+
 	/**
 		Create a new instance of the class manager.  
 		Class manager instnaces are now associated with the interpreter.
@@ -181,7 +185,34 @@ public class BshClassManager
 			clas = plainClassForName( name );
 		} catch ( ClassNotFoundException e ) { /*ignore*/ }
 
+		// try scripted class
+		if ( clas == null && declaringInterpreter.getCompatibility() )
+			clas = loadSourceClass( name );
+
 		return clas;
+	}
+
+	// Move me to classpath/ClassManagerImpl???
+	protected Class<?> loadSourceClass( final String name ) {
+		final String fileName = "/" + name.replace('.', '/') + ".java";
+		final InputStream in = getResourceAsStream( fileName );
+		if ( in == null ) {
+			return null;
+		}
+		try {
+			Interpreter.debug("Loading class from source file: " + fileName);
+			declaringInterpreter.eval( new InputStreamReader(in) );
+		} catch ( EvalError e ) {
+			if (Interpreter.DEBUG) {
+				e.printStackTrace();
+			}
+		}
+		try {
+			return plainClassForName( name );
+		} catch ( final ClassNotFoundException e ) {
+			Interpreter.debug("Class not found in source file: " + name);
+			return null;
+		}
 	}
 
 	/**
@@ -260,6 +291,30 @@ public class BshClassManager
 			absoluteClassCache.put( name, value );
 		else
 			absoluteNonClasses.add( name );
+	}
+
+	/**
+	 * Associate a persistent generated class implementation with this
+	 * interpreter.  An associated class will be used in lieu of generating
+	 * bytecode when a scripted class of the same name is encountered.
+	 * When such a class is defined in the script it will cause the associated
+	 * existing class implementation to be initialized (with the static
+	 * initializer field).  This is utilized by the persistent class generator
+	 * to allow a generated class to bootstrap an interpreter and rendesvous
+	 * with its implementation script.
+	 *
+	 * Class associations currently last for the life of the class manager.
+	 */
+	public void associateClass( Class clas )
+	{
+		// TODO should check to make sure it's a generated class here
+		// just need to add a method to classgenerator API to test it
+		associatedClasses.put( clas.getName(), clas );
+	}
+
+	public Class getAssociatedClass( String name )
+	{
+		return (Class)associatedClasses.get( name );
 	}
 
 	/**
