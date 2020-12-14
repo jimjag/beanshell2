@@ -2,7 +2,7 @@
 	Ant build file for BeanShell2
 	https://github.com/jimjag/beanshell2
 
-	Uses Ant 1.8
+	Uses Ant 1.9
 	http://www.apache.org/
 
 	Ant issues - 
@@ -16,8 +16,8 @@
 
 <property name="file" value=""/>
 
-    <property name="ant.build.javac.target" value="1.8" />
-    <property name="ant.build.javac.source" value="1.8" />
+    <property name="ant.build.javac.target" value="1.6" />
+    <property name="ant.build.javac.source" value="1.6" />
 	<property name="version" value="2.2.0"/>
 	<property name="deprecation" value="on"/>
 	<property name="Specification-Title" value="BeanShell" />
@@ -169,8 +169,8 @@
 			debug="on"
 			includes="**/*.java"
 			excludes="${excludes},**/bak/**"
-			source="1.8"
-			target="1.8"
+			source="1.6"
+			target="1.6"
 		>
 			<classpath>
 				<fileset refid="lib-fileset"/>
@@ -204,8 +204,8 @@
 			debug="on"
 			includes="**/*.java"
 			excludes="${excludes},**/bak/**"
-			source="1.8"
-			target="1.8"
+			source="1.6"
+			target="1.6"
 		>
 			<classpath>
 				<fileset refid="lib-fileset"/>
@@ -382,10 +382,10 @@
 
 	<target name="jarcore" depends="compile,_distdir">
 	<!--
-        <fail message="Please use ant 1.8">
+        <fail message="Please use ant 1.6">
             <condition>
                 <not>
-                    <contains string="${ant.version}" substring="1.8"/>
+                    <contains string="${ant.version}" substring="1.6"/>
                 </not>
             </condition>
         </fail>
@@ -650,8 +650,8 @@
 				destdir="${build-dir}"
 				debug="on"
 				debuglevel="lines,vars,source"
-				source="1.8"
-				target="1.8"
+				source="1.6"
+				target="1.6"
 			  >
 		 <classpath>
 			<path refid="test-classpath"/>

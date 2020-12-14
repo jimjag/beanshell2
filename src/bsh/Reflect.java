@@ -61,25 +61,6 @@ import java.util.ArrayList;
 */
 final class Reflect {
 
-	private static final boolean CHECK_MODULE_ACCESSIBILITY = true;
-    private static final MethodHandle trySetAccessible;
-
-    static {
-        MethodHandle methodHandle = null;
-        if (CHECK_MODULE_ACCESSIBILITY) {
-			try {
-				final Method method = AccessibleObject.class.getDeclaredMethod("trySetAccessible");
-				methodHandle = MethodHandles.lookup().unreflect(method);
-			} catch (IllegalAccessException e) {
-				// ignore
-			} catch (NoSuchMethodException e) {
-			    // ignore
-			}
-		}
-        trySetAccessible = methodHandle;
-    }
-
-
     /**
 	 * A comperator wich sorts methods according to {@@link #getVisibility}.
 	 */
@@ -904,26 +885,7 @@ final class Reflect {
 
 
 	private static boolean isPublic(Member member) {
-		if (!Modifier.isPublic(member.getModifiers())) {
-			return false;
-		}
-		if (member instanceof AccessibleObject) {
-			return trySetAccessible((AccessibleObject) member);
-		}
-		return true;
-	}
-
-
-	private static boolean trySetAccessible(AccessibleObject accessibleObject) {
-		if (trySetAccessible == null) {
-			return true;
-		}
-		try {
-			final boolean result = (Boolean) trySetAccessible.invoke(accessibleObject);
-			return result;
-		} catch (final Throwable throwable) {
-			return false;
-		}
+		return Modifier.isPublic(member.getModifiers());
 	}
 
 
