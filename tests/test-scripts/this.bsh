@@ -7,9 +7,9 @@ import java.math.BigDecimal;
 ths = this;
 assert( !(this.namespace instanceof bsh.BlockNameSpace) );
 
-booga() { print("booga"); }
-booga();
-this.booga();
+booga() { return "booga"; }
+assert(booga() == "booga");
+assert(this.booga() == "booga");
 
 if ( true ) 
 {
