@@ -1,6 +1,7 @@
 #!/bin/java bsh.Interpreter
 
 source("TestHarness.bsh");
+source("Assert.bsh");
 
 class Foo33 
 {
@@ -10,6 +11,9 @@ class Foo33
 	Object fooThis = this;
 	int q=5;
 
+    // Leave this as default level accessibility...
+    // prompts some important accessibility issues.
+    // maybe make a clear standalone case for that... TODO.
 	Foo33() { } // Foo33 needs a default constructor for Bar33()
 
 	Foo33( int c ) {
@@ -17,7 +21,7 @@ class Foo33
 	}
 
 	void method() { 
-		assert( a == 5 );
+        assertEquals( 5, a );
 		assert( q == 5 || q==6/*after setQ()*/);
 		assert( this == fooThis );
 
@@ -51,7 +55,7 @@ class Bar33 extends Foo33 {
 	barMethod() {
 		assert( b2 == 99 );
 		assert( this.b2 == 99 );
-assert(false);
+
 //assert( super.b2 == 42 );
 		method();
 		smethod();
@@ -79,9 +83,6 @@ assert( bar instanceof Foo33 );
 bar.method(); // instance
 bar.smethod(); // static
 bar.setQ(6);
-if ( Interpreter.LOCALSCOPING ) // not sure if we should allow this
-	assert( bar.q == 5 );
-else
 	assert( bar.q == 6 );
 
 // non default constructors
@@ -93,7 +94,7 @@ assert( bar2.q == 5 );
 assert( bar2.b2 == 99 );
 
 // Version 1.3 doesn't support this.
-//assert( ((Foo33)bar2).b2 == 42 );
+assertEquals(99, ((Foo33)bar2).b2 );
 
 // subclass tests
 bar.barMethod();
@@ -114,9 +115,6 @@ gee.method(); // instance
 gee.smethod(); // static
 assert( gee.q == 5 ); // loose instance
 gee.setQ(6);
-if ( Interpreter.LOCALSCOPING ) // not sure if we should allow this
-	assert( gee.q == 5 );
-else
 	assert( gee.q == 6 );
 
 assert( bar.method2().equals("bar") );

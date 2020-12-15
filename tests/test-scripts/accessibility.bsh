@@ -1,6 +1,9 @@
 #!/bin/java bsh.Interpreter
 
 source("TestHarness.bsh");
+source("Assert.bsh");
+
+assumeTrue("testing illegal access assumes accessibility", haveAccessibility());
 
 import mypackage.*;
 
@@ -23,12 +26,12 @@ assert(Accessibility2.sfield4==4);
 	Should 'field' of non-public A be accessible through public class B?
 	javac would allow this, but reflection API only works with accessibility on
 */
-//assert(Accessibility2.supersfield4==4);
+assert(Accessibility2.supersfield4 == void);
 
 javax.swing.JInternalFrame.DO_NOTHING_ON_CLOSE;
 
 assert( isEvalError("a.get1()") );
-assert( isEvalError("a.field1") );
+assert( a.field1 == void );
 
 //
 // With accessibility
@@ -38,11 +41,10 @@ setAccessibility(true);
 
 javax.swing.JInternalFrame.DO_NOTHING_ON_CLOSE;
 
-/*
+// constructors
 x=new Accessibility2(1);
 x=new Accessibility2(1,2);
 x=new Accessibility2(1,2,3);
-*/
 
 // methods
 assert(a.getB1()==1);
@@ -98,8 +100,13 @@ assert(Accessibility2.supersfield4==4);
 
 a=null;
 
-/*
+
 b=new Accessibility1();
+
+bc = b.new AccessibilityChild("hello BeanShell");
+assertEquals("hello BeanShell", bc.str);
+bc = new Accessibility2.AccessibilityChild2("hello BeanShell");
+assertEquals("hello BeanShell", bc.str);
 
 x=new Accessibility1(1);
 x=new Accessibility1(1,2);
@@ -114,13 +121,47 @@ assert(b.field1==1);
 assert(b.field2==2);
 assert(b.field3==3);
 assert(b.field4==4);
-*/
+
 
 m=new MethodSelection();
 assert(m.foo("foo").equals("public"));
 assert(m.foo(2).equals("private"));
+warning("this test runs on sparc but fails on windows... Nail this down.");
 assert(m.foo(null).equals("public"));
 
-setAccessibility(false);
+setAccessibility(true);
+
+// name space variables accessible as fields
+class AA {
+    private AA() {}
+    i = 6;
+    private int inst = 3;
+    private static String stat = "hello BeanShell";
+
+    private class BB {
+        BB() {}
+        BB(boolean b) { isInner = b; }
+        private boolean isInner = true;
+    }
+}
+
+assertEquals("hello BeanShell", AA.stat);
+AA.stat = "foo";
+assertEquals("foo", AA.stat);
+
+aa = new AA();
+assertEquals(6, aa.i);
+assertEquals(3, aa.inst);
+
+aa.i = 66;
+aa.inst = 33;
+
+assertEquals(66, aa.i);
+assertEquals(33, aa.inst);
+
+assertTrue(aa.new BB().isInner);
+assertTrue(new AA.BB().isInner);
+assertFalse(new AA.BB(false).isInner);
+assertFalse(aa.new BB(false).isInner);
 
 complete();

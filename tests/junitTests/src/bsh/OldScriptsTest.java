@@ -74,7 +74,11 @@ public class OldScriptsTest {
 		if (files != null) {
 			for (final File file : files) {
 				final String name = file.getName();
-				if (file.isFile() && name.endsWith(".bsh") && ! "TestHarness.bsh".equals(name) && ! "RunAllTests.bsh".equals(name) && ! "Fail.bsh".equals(name)) {
+				if (file.isFile() && name.endsWith(".bsh")
+				    && ! "TestHarness.bsh".equals(name)
+				    && ! "RunAllTests.bsh".equals(name)
+                    && !"Assert.bsh".equals(name)
+				    && ! "Fail.bsh".equals(name)) {
 					if (KnownIssue.SKIP_KOWN_ISSUES && KNOWN_FAILING_TESTS.contains(name)) {
 						System.out.println("skipping test " + file);
 						continue;
