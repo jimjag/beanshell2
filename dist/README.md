@@ -1,3 +1,12 @@
+December 15, 2020
+
+* Update [2.2.0b1](https://github.com/jimjag/beanshell2/raw/trunk/dist/bsh-2.2.0b1.jar)
+  * Merge contents of pejobo:master to pejobo/v2.1
+  * Fold in fixes from v2.0b6 and master from [beanshell.org](http://www.beanshell.org)
+  * Reset to Java6 as base JDK
+  * ASM updates
+  * Additional tests
+
 March 13, 2018
 
 * Update [2.1.9](https://github.com/pejobo/beanshell2/raw/v2.1/dist/bsh-2.1.9.jar)
