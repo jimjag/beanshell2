@@ -450,6 +450,8 @@
 				<exclude name="dist/**/*"/>
 				<exclude name="*javadoc*"/>
 				<exclude name="javadoc/**/*"/>
+				<exclude name="tests/junit-reports"/>
+				<exclude name="local"/>
 				<!--exclude name="docs/**/*"/-->
 				<exclude name="**/CVS"/>
 				<exclude name="**/.svn"/>
