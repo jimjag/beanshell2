@@ -1,4 +1,4 @@
-Buildfile: /Users/jim/src/misc/beanshell/build.xml
+Buildfile: /Users/jim/src/misc/beanshell2/build.xml
 
 checkjjt:
 
@@ -11,13 +11,18 @@ javacc:
 builddir:
 
 compile:
-    [javac] /Users/jim/src/misc/beanshell/build.xml:210: warning: 'includeantruntime' was not set, defaulting to build.sysclasspath=last; set to false for repeatable builds
-    [javac] Compiling 14 source files to /Users/jim/src/misc/beanshell/classes
+    [javac] /Users/jim/src/misc/beanshell2/build.xml:218: warning: 'includeantruntime' was not set, defaulting to build.sysclasspath=last; set to false for repeatable builds
+    [javac] Compiling 14 source files to /Users/jim/src/misc/beanshell2/classes
     [javac] warning: [options] bootstrap class path not set in conjunction with -source 1.6
     [javac] 1 warning
 
 build-junit-tests:
-    [javac] /Users/jim/src/misc/beanshell/build.xml:632: warning: 'includeantruntime' was not set, defaulting to build.sysclasspath=last; set to false for repeatable builds
+    [javac] /Users/jim/src/misc/beanshell2/build.xml:686: warning: 'includeantruntime' was not set, defaulting to build.sysclasspath=last; set to false for repeatable builds
+    [javac] Compiling 31 source files to /Users/jim/src/misc/beanshell2/classes
+    [javac] warning: [options] bootstrap class path not set in conjunction with -source 1.6
+    [javac] Note: Some input files use or override a deprecated API.
+    [javac] Note: Recompile with -Xlint:deprecation for details.
+    [javac] 1 warning
 
 junit-tests-all:
     [junit] Running bsh.BshMethodTest
@@ -74,4 +79,4 @@ junit-tests-all:
     [junit] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0
 
 BUILD SUCCESSFUL
-Total time: 10 seconds
+Total time: 9 seconds

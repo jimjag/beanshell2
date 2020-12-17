@@ -445,7 +445,7 @@ public class Interpreter
 				eval("printBanner();"); 
 			} catch ( EvalError e ) {
 				println(
-					"BeanShell " + VERSION + " - https://github.com/beanshell/beanshell");
+					"BeanShell2 " + VERSION + " - https://github.com/beanshell/beanshell");
 			}
 
 		// init the callstack.  
