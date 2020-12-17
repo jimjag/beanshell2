@@ -20,9 +20,8 @@
     <property name="ant.build.javac.source" value="1.6" />
 	<property name="version" value="2.2.0b1"/>
 	<property name="deprecation" value="on"/>
-	<property name="Specification-Title" value="BeanShell" />
+	<property name="Specification-Title" value="BeanShell2" />
 	<property name="Specification-Version" value="${version}" />
-	<property name="Specification-Vendor" value="http://www.beanshell.org/" />
 	<property name="Implementation-Vendor" value="https://github.com/jimjag/beanshell2" />
 
 	<!-- choose an alternate compiler -->
@@ -69,11 +68,6 @@
 		value="bsh/org/objectweb/asm/**,bsh/ClassGeneratorImpl.java,bsh/ClassGeneratorUtil.java,bsh/DelayedEvalBshMethod.java"/>
 	-->
 
-	<!-- Uncomment to build without making the servlet package 
-	<property name="exclude-servlet" 
-		value="bsh/servlet/*"/>
-	-->
-
 	<!-- Legacy excludes.  Comment this *out* to build these legacy items -->
 	<property name="excludes-legacy" 
 		value="bsh/JThis.java"/>
@@ -87,7 +81,7 @@
 	<!--  Add up all of the excludes -->
 	<!-- how do I add strings to break this long line? -->
 	<property name="excludes" 
-		value="${exclude-1.2},${exclude-1.1},${exclude-bsf},${exclude-servlet},${excludes-legacy},${exclude-classgen},${excludes-arbitrary}"/>
+		value="${exclude-1.2},${exclude-1.1},${exclude-bsf},${excludes-legacy},${exclude-classgen},${excludes-arbitrary}"/>
 
 	<!-- JARs -->
 	<property name="javadoc-zip" value="${dist-dir}/bsh-${version}-javadoc.zip"/>
@@ -106,9 +100,6 @@
 	<property name="util-jar" value="${dist-dir}/bsh-util-${version}.jar"/>
 	<property name="bsf-jar" value="${dist-dir}/bsh-bsf-${version}.jar"/>
 	<property name="classgen-jar" value="${dist-dir}/bsh-classgen-${version}.jar"/>
-	<property name="bshservlet-wbsh-war" 
-		value="${dist-dir}/bshservlet-wbsh.war"/>
-	<property name="bshservlet-war" value="${dist-dir}/bshservlet.war"/>
 
 	<!-- Put the auto-generated command doc in the manual dir -->
 	<property name="commands-bshdoc" 
@@ -218,9 +209,6 @@
 				<patternset refid="commands-bsh-patternset"/>
 				<!-- install the util/lib stuff -->
 				<patternset refid="util-lib-patternset"/>
-<!-- need to break this into a separate target to use exclude -->
-				<!-- install the servlet stuff -->
-				<patternset refid="bshservlet-patternset"/>
 			</fileset>
 
 			<!-- install bsh commands used in tests -->
@@ -279,8 +267,6 @@
 		<delete quiet="true" file="${reflect-jar}"/>
 		<delete quiet="true" file="${bsf-jar}"/>
 		<delete quiet="true" file="${classgen-jar}"/>
-		<delete quiet="true" file="${bshservlet-wbsh-war}"/>
-		<delete quiet="true" file="${bshservlet-war}"/>
 		-->
 
 		<delete quiet="true" file="${commands-bshdoc}"/>
@@ -342,14 +328,6 @@
 			<include name="bsh/ClassGeneratorUtil*.class"/>
 			<include name="bsh/DelayedEvalBshMethod*.class"/>
 			<include name="bsh/org/objectweb/asm/**/*.class"/>
-		</patternset>
-	</fileset>
-
-	<fileset id="bshservlet-fileset" dir="${build-dir}">
-		<patternset id="bshservlet-patternset">
-			<include name="bsh/servlet/*.class"/>
-			<include name="bsh/servlet/*.bsh"/>
-			<include name="bsh/servlet/*.template"/>
 		</patternset>
 	</fileset>
 
@@ -429,7 +407,6 @@
 			<fileset refid="commands-fileset"/>
 			<fileset refid="bsf-fileset"/>
 			<fileset refid="classgen-fileset"/>
-			<fileset refid="bshservlet-fileset"/>
 <!-- hack, see core-fileset -->
 			<fileset dir="${build-dir}">
 				<patternset>
@@ -492,7 +469,7 @@
 	</target>
 	
 	<!-- Make all of the dist jars -->
-	<target name="dist" depends="_distdir,compile-all,jarcore,jarall,javadoc,zipsrc,jarsrc,pom,bshservlet-war,bshservlet-wbsh-war,bshdoc">
+	<target name="dist" depends="_distdir,compile-all,jarcore,jarall,javadoc,zipsrc,jarsrc,pom,bshdoc">
 
 		<antcall target="jarfileset">
 			<param name="target-jar" value="${commands-jar}"/>
@@ -545,37 +522,6 @@
 			It's breaking the jakarta GUMP build for some reason.
 		<ant dir="docs/manual"/>
 		-->
-	</target>
-
-	<target name="bshservlet-war" depends="compile" unless="exclude-servlet">
-		<war warfile="${bshservlet-war}" 
-			webxml="${src-dir}/bsh/servlet/example-web.xml">
-			<manifest>
-				<attribute name="Specification-Title" value="BeanShell webapp" />
-				<attribute name="Specification-Version" value="${version}" />
-				<attribute name="Specification-Vendor" value="${Specification-Vendor}" />
-				<attribute name="Implementation-Version" value="${version} ${DATE}" />
-				<attribute name="Implementation-Vendor" value="${Implementation-Vendor}" />
-			</manifest>
-			<!--classes dir="${build-dir}" includes="bsh/servlet/**/*"/-->
-			<fileset dir="${src-dir}/bsh/servlet/" includes="index.html"/>
-		</war>
-	</target>
-	<target name="bshservlet-wbsh-war" 
-					depends="compile,jarall" unless="exclude-servlet">
-		<war warfile="${bshservlet-wbsh-war}" 
-			webxml="${src-dir}/bsh/servlet/example-web.xml">
-			<manifest>
-				<attribute name="Specification-Title" value="BeanShell webapp" />
-				<attribute name="Specification-Version" value="${version}" />
-				<attribute name="Specification-Vendor" value="${Specification-Vendor}" />
-				<attribute name="Implementation-Version" value="${version} ${DATE}" />
-				<attribute name="Implementation-Vendor" value="${Implementation-Vendor}" />
-			</manifest>
-			<!--classes dir="${build-dir}" includes="bsh/servlet/**/*"/-->
-			<fileset dir="${src-dir}/bsh/servlet/" includes="index.html"/>
-			<lib dir="${dist-dir}" includes="${all-jar-name}"/>
-		</war>
 	</target>
 
 	<!-- 
