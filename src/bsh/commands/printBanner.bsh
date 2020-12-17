@@ -25,12 +25,12 @@ printBanner()
 	    jconsole.println( 
 			new ImageIcon( getResource("/bsh/util/lib/small_bean_shell.png")) );
 	    jconsole.print(
-			Interpreter.VERSION + " - https://github.com/jimjag/beanshell2",
+			Interpreter.VERSION + " - https://github.com/beanshell/beanshell",
 			new Font("SansSerif", Font.BOLD, 12), 
 			new Color(20,100,20) );
 	    jconsole.println();
 
 	} else
-		print( "BeanShell " + Interpreter.VERSION +" - https://github.com/jimjag/beanshell2");
+		print( "BeanShell " + Interpreter.VERSION +" - https://github.com/beanshell/beanshell");
 
 }

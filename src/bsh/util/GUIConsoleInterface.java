@@ -17,10 +17,6 @@
  * under the License.                                                        *
  *                                                                           *
  * This file is part of the BeanShell Java Scripting distribution.           *
- * Documentation and updates may be found at                                 *
- *      https://github.com/jimjag/beanshell2                                 *
- *                                                                           *
- * This file is part of the BeanShell Java Scripting distribution.           *
  * Documentation and updates may be found at http://www.beanshell.org/       *
  * Patrick Niemeyer (pat@pat.net)                                            *
  * Author of Learning Java, O'Reilly & Associates                            *
@@ -34,7 +30,7 @@ import java.awt.Color;
 
 /**
 	Additional capabilities of an interactive console for BeanShell.
-	Althought this is called "GUIConsoleInterface" it might just as well be 
+	Although this is called "GUIConsoleInterface" it might just as well be 
 	used by a more sophisticated text-only command line.
 	<p>
 	Note: we may want to express the command line history, editing, 

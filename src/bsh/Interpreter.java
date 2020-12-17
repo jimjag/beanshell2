@@ -17,10 +17,6 @@
  * under the License.                                                        *
  *                                                                           *
  * This file is part of the BeanShell Java Scripting distribution.           *
- * Documentation and updates may be found at                                 *
- *      https://github.com/jimjag/beanshell2                                 *
- *                                                                           *
- * This file is part of the BeanShell Java Scripting distribution.           *
  * Documentation and updates may be found at http://www.beanshell.org/       *
  * Patrick Niemeyer (pat@pat.net)                                            *
  * Author of Learning Java, O'Reilly & Associates                            *
@@ -103,7 +99,7 @@ public class Interpreter
 {
 	/* --- Begin static members --- */
 
-	public static final String VERSION = "2.2.0b1";
+	public static final String VERSION = "2.0.0b7";
 	/*
 		Debug utils are static so that they are reachable by code that doesn't
 		necessarily have an interpreter reference (e.g. tracing in utils).
@@ -449,7 +445,7 @@ public class Interpreter
 				eval("printBanner();"); 
 			} catch ( EvalError e ) {
 				println(
-					"BeanShell " + VERSION + " - https://github.com/jimjag/beanshell2");
+					"BeanShell " + VERSION + " - https://github.com/beanshell/beanshell");
 			}
 
 		// init the callstack.  

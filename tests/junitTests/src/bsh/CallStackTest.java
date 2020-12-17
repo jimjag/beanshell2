@@ -17,10 +17,6 @@
  * under the License.                                                        *
  *                                                                           *
  * This file is part of the BeanShell Java Scripting distribution.           *
- * Documentation and updates may be found at                                 *
- *      https://github.com/jimjag/beanshell2                                 *
- *                                                                           *
- * This file is part of the BeanShell Java Scripting distribution.           *
  * Documentation and updates may be found at http://www.beanshell.org/       *
  * Patrick Niemeyer (pat@pat.net)                                            *
  * Author of Learning Java, O'Reilly & Associates                            *
@@ -43,7 +39,7 @@ public class CallStackTest {
 	public void callStack_should_be_serializable() throws Exception {
 		final NameSpace nameSpace = new NameSpace(null, new BshClassManager(), "test");
 		nameSpace.setLocalVariable("test", "test", false);
-		final CallStack stack = TestUtil.serDeser(new CallStack(nameSpace));
+        final CallStack stack = (CallStack) TestUtil.serDeser((java.io.Serializable) new CallStack(nameSpace));
 		Assert.assertEquals("test", stack.top().get("test", null));
 	}
 }

@@ -1,0 +1,77 @@
+Buildfile: /Users/jim/src/misc/beanshell/build.xml
+
+checkjjt:
+
+jjtree:
+
+checkjj:
+
+javacc:
+
+builddir:
+
+compile:
+    [javac] /Users/jim/src/misc/beanshell/build.xml:210: warning: 'includeantruntime' was not set, defaulting to build.sysclasspath=last; set to false for repeatable builds
+    [javac] Compiling 14 source files to /Users/jim/src/misc/beanshell/classes
+    [javac] warning: [options] bootstrap class path not set in conjunction with -source 1.6
+    [javac] 1 warning
+
+build-junit-tests:
+    [javac] /Users/jim/src/misc/beanshell/build.xml:632: warning: 'includeantruntime' was not set, defaulting to build.sysclasspath=last; set to false for repeatable builds
+
+junit-tests-all:
+    [junit] Running bsh.BshMethodTest
+    [junit] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0
+    [junit] Running bsh.BshSerializationTest
+    [junit] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0
+    [junit] Running bsh.CallStackTest
+    [junit] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0
+    [junit] Running bsh.Class13Test
+    [junit] Tests run: 1, Failures: 0, Errors: 1, Skipped: 0
+    [junit] Test bsh.Class13Test FAILED
+    [junit] Running bsh.Class3_Test
+    [junit] Tests run: 1, Failures: 0, Errors: 1, Skipped: 0
+    [junit] Test bsh.Class3_Test FAILED
+    [junit] Running bsh.ClassGeneratorTest
+    [junit] Tests run: 7, Failures: 0, Errors: 1, Skipped: 0
+    [junit] Test bsh.ClassGeneratorTest FAILED
+    [junit] Running bsh.InterpreterConcurrencyTest
+    [junit] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0
+    [junit] Running bsh.InterpreterTest
+    [junit] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0
+    [junit] Running bsh.Issue_55_Test
+    [junit] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0
+    [junit] Running bsh.Issue_7_Test
+    [junit] Tests run: 1, Failures: 0, Errors: 1, Skipped: 0
+    [junit] Test bsh.Issue_7_Test FAILED
+    [junit] Running bsh.Issue_88_Test
+    [junit] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0
+    [junit] Running bsh.Issue_8_Test
+    [junit] Tests run: 1, Failures: 0, Errors: 1, Skipped: 0
+    [junit] Test bsh.Issue_8_Test FAILED
+    [junit] Running bsh.Issue_93_Test
+    [junit] Tests run: 5, Failures: 0, Errors: 0, Skipped: 0
+    [junit] Running bsh.Issue_94_Test
+    [junit] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0
+    [junit] Running bsh.Java_9_Test
+    [junit] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0
+    [junit] Running bsh.NumberLiteralTest
+    [junit] Tests run: 7, Failures: 1, Errors: 2, Skipped: 0
+    [junit] Test bsh.NumberLiteralTest FAILED
+    [junit] Running bsh.OldScriptsTest
+    [junit] Tests run: 119, Failures: 2, Errors: 7, Skipped: 0
+    [junit] Test bsh.OldScriptsTest FAILED
+    [junit] Running bsh.PreparsedScriptTest
+    [junit] Tests run: 5, Failures: 0, Errors: 0, Skipped: 0
+    [junit] Running bsh.Project_Coin_Test
+    [junit] Tests run: 5, Failures: 1, Errors: 2, Skipped: 0
+    [junit] Test bsh.Project_Coin_Test FAILED
+    [junit] Running bsh.ReflectTest
+    [junit] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0
+    [junit] Running bsh.StringLiteralTest
+    [junit] Tests run: 6, Failures: 0, Errors: 0, Skipped: 0
+    [junit] Running bsh.VarargsTest
+    [junit] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0
+
+BUILD SUCCESSFUL
+Total time: 10 seconds

@@ -18,7 +18,7 @@
  *																		   *
  * This file is part of the BeanShell Java Scripting distribution.		   *
  * Documentation and updates may be found at								 *
- *	  https://github.com/jimjag/beanshell2								 *
+ *	  https://github.com/beanshell/beanshell								 *
  *																		   *
  * This file is part of the BeanShell Java Scripting distribution.		   *
  * Documentation and updates may be found at http://www.beanshell.org/	   *

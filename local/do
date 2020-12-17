@@ -1,0 +1,5 @@
+cd ..
+ant
+ant junit-tests-all 2>&1 | sed -e 's/, Time.*//'> local/testvFOO
+cd local
+diff -u testv2 testvFOO | cdiff

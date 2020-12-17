@@ -17,10 +17,6 @@
  * under the License.                                                        *
  *                                                                           *
  * This file is part of the BeanShell Java Scripting distribution.           *
- * Documentation and updates may be found at                                 *
- *      https://github.com/jimjag/beanshell2                                 *
- *                                                                           *
- * This file is part of the BeanShell Java Scripting distribution.           *
  * Documentation and updates may be found at http://www.beanshell.org/       *
  * Patrick Niemeyer (pat@pat.net)                                            *
  * Author of Learning Java, O'Reilly & Associates                            *

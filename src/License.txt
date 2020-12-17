@@ -4,7 +4,7 @@
  *        http://www.beanshell.org/                                          *
  *                                                                           *
  *  BeanShell2 is hosted at Google-Code at                                   *
- *        https://github.com/jimjag/beanshell2                                *
+ *        https://github.com/beanshell/beanshell                                *
  *                                                                           *
  *  BeanShell2 is licensed under GNU Lesser GPL v3                           *
  *  See http://www.gnu.org/licenses/lgpl.html                                *

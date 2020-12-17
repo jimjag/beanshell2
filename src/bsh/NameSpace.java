@@ -17,10 +17,6 @@
  * under the License.                                                        *
  *                                                                           *
  * This file is part of the BeanShell Java Scripting distribution.           *
- * Documentation and updates may be found at                                 *
- *      https://github.com/jimjag/beanshell2                                 *
- *                                                                           *
- * This file is part of the BeanShell Java Scripting distribution.           *
  * Documentation and updates may be found at http://www.beanshell.org/       *
  * Patrick Niemeyer (pat@pat.net)                                            *
  * Author of Learning Java, O'Reilly & Associates                            *
@@ -60,10 +56,9 @@ import java.lang.reflect.Field;
 	Thanks to Slava Pestov (of jEdit fame) for import caching enhancements.
 	Note: This class has gotten too big.  It should be broken down a bit.
 */
-// not at all thread-safe - fschmidt
 public class NameSpace implements Serializable, BshClassManager.Listener, NameSource, Cloneable {
 	
-	private static final long serialVersionUID = 5004976946651004751L;
+	private static final long serialVersionUID = 0L;
 
 	public static final NameSpace JAVACODE = 
 		new NameSpace((BshClassManager)null, "Called from compiled Java code.");

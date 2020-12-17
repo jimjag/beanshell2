@@ -17,10 +17,6 @@
  * under the License.                                                        *
  *                                                                           *
  * This file is part of the BeanShell Java Scripting distribution.           *
- * Documentation and updates may be found at                                 *
- *      https://github.com/jimjag/beanshell2                                 *
- *                                                                           *
- * This file is part of the BeanShell Java Scripting distribution.           *
  * Documentation and updates may be found at http://www.beanshell.org/       *
  * Patrick Niemeyer (pat@pat.net)                                            *
  * Author of Learning Java, O'Reilly & Associates                            *
@@ -53,12 +49,8 @@ public class BshMethodTest {
       }
 
       final String name = "testMethod";
-      final BshMethod subInst =
-            new SubMethod(name, Integer.class, new String[] {}, new Class[] {},
-                  null, null, null);
-      final BshMethod supInst =
-            new BshMethod(name, Integer.class, new String[] {}, new Class[] {},
-                  null, null, null);
+        final BshMethod subInst = new SubMethod(name, Integer.class, new String[]{}, new Class[]{}, null, null, null);
+        final BshMethod supInst = new BshMethod(name, Integer.class, new String[]{}, new Class[]{}, null, null, null);
 
         Assert.assertFalse("Subclasses should not be equal to super classes", supInst.equals(subInst));
    }
