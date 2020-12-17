@@ -18,11 +18,6 @@ compile:
 
 build-junit-tests:
     [javac] /Users/jim/src/misc/beanshell2/build.xml:686: warning: 'includeantruntime' was not set, defaulting to build.sysclasspath=last; set to false for repeatable builds
-    [javac] Compiling 31 source files to /Users/jim/src/misc/beanshell2/classes
-    [javac] warning: [options] bootstrap class path not set in conjunction with -source 1.6
-    [javac] Note: Some input files use or override a deprecated API.
-    [javac] Note: Recompile with -Xlint:deprecation for details.
-    [javac] 1 warning
 
 junit-tests-all:
     [junit] Running bsh.BshMethodTest
