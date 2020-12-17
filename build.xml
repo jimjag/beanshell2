@@ -84,22 +84,22 @@
 		value="${exclude-1.2},${exclude-1.1},${exclude-bsf},${excludes-legacy},${exclude-classgen},${excludes-arbitrary}"/>
 
 	<!-- JARs -->
-	<property name="javadoc-zip" value="${dist-dir}/bsh-${version}-javadoc.zip"/>
-	<property name="core-jar" value="${dist-dir}/bsh-core-${version}.jar"/>
-	<property name="src-zip" value="${dist-dir}/bsh-${version}-src.zip"/>
-	<property name="src-jar" value="${dist-dir}/bsh-${version}-sources.jar"/>
-	<property name="pom" value="${dist-dir}/bsh-${version}.pom"/>
-	<property name="all-jar-name" value="bsh-${version}.jar"/>
+	<property name="javadoc-zip" value="${dist-dir}/bsh2-${version}-javadoc.zip"/>
+	<property name="core-jar" value="${dist-dir}/bsh2-core-${version}.jar"/>
+	<property name="src-zip" value="${dist-dir}/bsh2-${version}-src.zip"/>
+	<property name="src-jar" value="${dist-dir}/bsh2-${version}-sources.jar"/>
+	<property name="pom" value="${dist-dir}/bsh2-${version}.pom"/>
+	<property name="all-jar-name" value="bsh2-${version}.jar"/>
 	<property name="all-jar" value="${dist-dir}/${all-jar-name}"/>
 	<property name="commands-jar" 
-		value="${dist-dir}/bsh-commands-${version}.jar"/>
+		value="${dist-dir}/bsh2-commands-${version}.jar"/>
 	<property name="classpath-jar" 
-		value="${dist-dir}/bsh-classpath-${version}.jar"/>
+		value="${dist-dir}/bsh2-classpath-${version}.jar"/>
 	<property name="reflect-jar" 
-		value="${dist-dir}/bsh-reflect-${version}.jar"/>
-	<property name="util-jar" value="${dist-dir}/bsh-util-${version}.jar"/>
-	<property name="bsf-jar" value="${dist-dir}/bsh-bsf-${version}.jar"/>
-	<property name="classgen-jar" value="${dist-dir}/bsh-classgen-${version}.jar"/>
+		value="${dist-dir}/bsh2-reflect-${version}.jar"/>
+	<property name="util-jar" value="${dist-dir}/bsh2-util-${version}.jar"/>
+	<property name="bsf-jar" value="${dist-dir}/bsh2-bsf-${version}.jar"/>
+	<property name="classgen-jar" value="${dist-dir}/bsh2-classgen-${version}.jar"/>
 
 	<!-- Put the auto-generated command doc in the manual dir -->
 	<property name="commands-bshdoc" 
@@ -231,7 +231,7 @@
 			 destdir="${javadoc-dir}"
 			 author="true"
 			 version="true"
-			 source="1.5"
+			 source="1.6"
 			 use="true"
 			 windowtitle="BeanShell ${version}"
 			 doctitle="&lt;h1&gt;BeanShell ${version}&lt;h1&gt;"
